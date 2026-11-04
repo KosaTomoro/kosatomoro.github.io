@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPosts, tagUrl } from '../../lib/posts';
+const posts = await getPosts();
+const tags = [...new Set(posts.flatMap(({ data }) => data.tags))].sort((a, b) => a.localeCompare(b, 'zh-CN'));
+---
+<Base title="标签">
+  <div class="shell page-content">
+    <header class="page-heading"><span class="eyebrow">FOLLOW YOUR CURIOSITY</span><h1>沿着兴趣，读下去<span class="accent">。</span></h1><p>用一个关键词，找到相关的文字。</p></header>
+    <div class="tag-cloud">{tags.map((tag) => <a href={tagUrl(tag)}><span>#{tag}</span><span class="tag-count">{posts.filter(({ data }) => data.tags.includes(tag)).length}</span></a>)}</div>
+    {!tags.length && <p class="empty-state">文章发布后，标签会出现在这里。</p>}
+  </div>
+</Base>

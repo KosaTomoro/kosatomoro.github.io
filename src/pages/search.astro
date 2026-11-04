@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="搜索" noindex>
+  <div class="shell page-content search-page">
+    <header class="page-heading"><span class="eyebrow">FIND A THOUGHT</span><h1>找一段，想读的文字<span class="accent">。</span></h1><p>输入关键词，搜索文章标题与正文。</p></header>
+    <form id="search-form" role="search" autocomplete="off">
+      <label class="sr-only" for="search-input">搜索文章</label>
+      <div class="search-field"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg><input id="search-input" name="q" type="search" placeholder="例如：分库分表、ShardingSphere…" /><button type="submit">搜索 <span aria-hidden="true">↵</span></button></div>
+    </form>
+    <p id="search-status" class="search-status" role="status" aria-live="polite">从一个关键词开始。</p>
+    <div id="search-results" class="search-results"></div>
+    <noscript><p>全文搜索需要 JavaScript。你也可以通过<a href="/archive/">归档</a>或<a href="/tags/">标签</a>查找文章。</p></noscript>
+  </div>
+</Base>
+<script>
+  interface SearchData { url: string; meta: { title?: string }; excerpt: string }
+  interface SearchResult { data: () => Promise<SearchData> }
+  interface Pagefind { search: (query: string) => Promise<{ results: SearchResult[] }> }
+  const input = document.querySelector<HTMLInputElement>('#search-input')!;
+  const form = document.querySelector<HTMLFormElement>('#search-form')!;
+  const status = document.querySelector<HTMLElement>('#search-status')!;
+  const results = document.querySelector<HTMLElement>('#search-results')!;
+  let pagefind: Promise<Pagefind> | undefined;
+  let sequence = 0;
+  let timer: ReturnType<typeof setTimeout>;
+  const loadSearch = (): Promise<Pagefind> => {
+    // The index is generated after Astro's build, so Vite must leave this import alone.
+    const url = '/pagefind/pagefind.js';
+    return pagefind ??= import(/* @vite-ignore */ url).catch((error) => { pagefind = undefined; throw error; });
+  };
+  const search = async () => {
+    const query = input.value.trim();
+    const request = ++sequence;
+    results.replaceChildren();
+    const url = new URL(window.location.href);
+    if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+    history.replaceState(null, '', url);
+    if (!query) { status.textContent = '从一个关键词开始。'; return; }
+    status.textContent = '正在寻找相关文字…';
+    try {
+      const engine = await loadSearch();
+      const response = await engine.search(query);
+      if (request !== sequence) return;
+      const matches = await Promise.all(response.results.slice(0, 30).map((result) => result.data()));
+      if (request !== sequence) return;
+      status.textContent = response.results.length ? `找到 ${response.results.length} 篇文章${response.results.length > 30 ? '，显示前 30 篇' : ''}` : `没有找到与「${query}」相关的文章，试试其他关键词。`;
+      for (const match of matches) {
+        const item = document.createElement('article');
+        const heading = document.createElement('h2');
+        const link = document.createElement('a');
+        link.href = match.url;
+        link.textContent = match.meta.title ?? '阅读文章';
+        heading.append(link);
+        const excerpt = document.createElement('p');
+        // Keep only text and search highlights, never arbitrary HTML from content.
+        const parsed = new DOMParser().parseFromString(match.excerpt, 'text/html');
+        const appendText = (source: Node, target: Node) => {
+          for (const child of source.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE) target.appendChild(document.createTextNode(child.textContent ?? ''));
+            else if (child instanceof Element && child.tagName === 'MARK') { const mark = document.createElement('mark'); mark.textContent = child.textContent; target.appendChild(mark); }
+            else appendText(child, target);
+          }
+        };
+        appendText(parsed.body, excerpt);
+        item.append(heading, excerpt);
+        results.append(item);
+      }
+    } catch {
+      if (request !== sequence) return;
+      status.textContent = import.meta.env.DEV ? '开发模式未生成搜索索引，请运行 npm run build 和 npm run preview 验证搜索。' : '搜索暂时无法加载，请稍后重试，也可以先浏览归档。';
+      const retry = document.createElement('button');
+      retry.type = 'button'; retry.className = 'text-link'; retry.textContent = '重试'; retry.addEventListener('click', search); results.append(retry);
+    }
+  };
+  form.addEventListener('submit', (event) => { event.preventDefault(); clearTimeout(timer); void search(); });
+  input.addEventListener('input', () => { ++sequence; clearTimeout(timer); timer = setTimeout(search, 200); });
+  input.value = new URL(location.href).searchParams.get('q') ?? '';
+  if (input.value) void search();
+</script>

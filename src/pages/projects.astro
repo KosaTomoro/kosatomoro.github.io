@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCards from '../components/ProjectCards.astro';
+import { site } from '../config';
+---
+<Base title="项目">
+  <div class="shell page-content">
+    <header class="page-heading"><span class="eyebrow">LEARNING BY BUILDING</span><h1>把想法写成代码<span class="accent">。</span></h1><p>一些关于后端与分布式系统的实践。源码与更多细节，都在 GitHub。</p></header>
+    <ProjectCards />
+    <div class="browse-note"><span>更多代码与探索</span><a href={site.github} target="_blank" rel="noopener noreferrer">访问我的 GitHub ↗</a></div>
+  </div>
+</Base>

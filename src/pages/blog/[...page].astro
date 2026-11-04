@@ -1,0 +1,9 @@
+---
+import BlogIndex from '../../components/BlogIndex.astro';
+import { getPosts, pageEntries } from '../../lib/posts';
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return pageEntries(posts).map(({ page, ...props }) => ({ params: { page }, props: { ...props, count: posts.length } }));
+}
+---
+<BlogIndex {...Astro.props} base="/blog/" />
