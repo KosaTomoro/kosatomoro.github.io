@@ -1,0 +1,6 @@
+---
+import BlogIndex from '../../components/BlogIndex.astro';
+import { getPosts } from '../../lib/posts';
+const posts = await getPosts();
+---
+<BlogIndex posts={posts} count={posts.length} />

@@ -11,20 +11,3 @@ export const site = {
   github: 'https://github.com/KosaTomoro',
   rss: '/rss.xml',
 } as const;
-
-export const projects = [
-  {
-    name: 'fku-raft-kv',
-    label: '分布式存储',
-    description: '分布式 kv 存储器，基于 Raft 实现。',
-    language: 'Go',
-    url: 'https://github.com/KosaTomoro/fku-raft-kv',
-  },
-  {
-    name: 'fku-balancer',
-    label: '网络与基础设施',
-    description: '一个负载均衡器，支持多种负载均衡算法。',
-    language: 'Go',
-    url: 'https://github.com/KosaTomoro/fku-balancer',
-  },
-];

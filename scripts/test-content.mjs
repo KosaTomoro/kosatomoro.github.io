@@ -25,23 +25,21 @@ try {
   assert.equal(build.status, 0, build.stdout + build.stderr);
   const read = (path) => readFileSync(join(work, 'dist', path), 'utf8');
   const first = read('blog/index.html');
-  const second = read('blog/2/index.html');
-  assert.equal(rowCount(first), 10);
-  assert.equal(rowCount(second), 3);
-  assert.match(first, /href="\/blog\/2\/" rel="next"/);
-  assert.match(second, /href="\/blog\/" rel="prev"/);
+  assert.equal(rowCount(first), 13);
+  assert.equal(existsSync(join(work, 'dist/blog/2/index.html')), false);
+  assert.doesNotMatch(first, /class="pagination"|rel="next"|rel="prev"/);
   const lifePosition = first.indexOf('href="/blog/fixture-life/"');
   const techPosition = first.indexOf('href="/blog/fixture-tech-11/"');
   assert.ok(lifePosition >= 0 && techPosition > lifePosition, 'Posts should be newest first');
-  assert.equal(rowCount(read('blog/category/tech/index.html')), 10);
-  assert.equal(rowCount(read('blog/category/tech/2/index.html')), 2);
+  assert.equal(rowCount(read('blog/category/tech/index.html')), 12);
+  assert.equal(existsSync(join(work, 'dist/blog/category/tech/2/index.html')), false);
   assert.equal(rowCount(read('blog/category/life/index.html')), 1);
   assert.equal(existsSync(join(work, 'dist/blog/draft-never-publish')), false);
   assert.equal(existsSync(join(work, 'dist/tags/draft-only-tag')), false);
-  for (const path of ['index.html', 'blog/index.html', 'blog/2/index.html', 'archive/index.html', 'tags/index.html', 'rss.xml', 'sitemap-0.xml']) assert.doesNotMatch(read(path), /draft-never-publish|draft-only-tag/);
+  for (const path of ['index.html', 'blog/index.html', 'archive/index.html', 'tags/index.html', 'rss.xml', 'sitemap-0.xml']) assert.doesNotMatch(read(path), /draft-never-publish|draft-only-tag/);
   assert.match(read('blog/fixture-tech-11/index.html'), /fixture-life/);
   assert.match(read('blog/fixture-tech-11/index.html'), /fixture-tech-10/);
-  console.log('Content integration passed: 13 published posts, all/category pagination, ordering, neighbors, and draft exclusion.');
+  console.log('Content integration passed: 13 published posts, unpaginated lists, ordering, neighbors, and draft exclusion.');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }

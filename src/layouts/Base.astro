@@ -37,7 +37,7 @@ const year = new Intl.DateTimeFormat('en', { timeZone: site.timezone, year: 'num
       (() => {
         let theme;
         try { theme = localStorage.getItem('theme'); } catch {}
-        document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : 'dark';
       })();
     </script>
   </head>

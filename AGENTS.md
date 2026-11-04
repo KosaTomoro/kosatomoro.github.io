@@ -9,7 +9,7 @@ This repository is Kosa Tomoro's public personal blog at `https://kosatomoro.git
 - Keep the site static. Add client JavaScript only for interactions that need it. Do not add a server, database, analytics, comments, authentication, or a CMS unless the user explicitly requests it.
 - Treat everything in `src/content/blog/` as potentially public. `draft: true` excludes a post from the build but does not make its source private in a public repository.
 - Keep user-facing copy in Chinese unless a small English label is part of the established design. Do not invent biography, employment history, achievements, projects, testimonials, or metrics.
-- Keep site identity, social links, avatar path, and featured projects in `src/config.ts`. Keep article schema and allowed categories in `src/content.config.ts`.
+- Keep site identity, social links, and avatar path in `src/config.ts`. Keep article schema and allowed categories in `src/content.config.ts`.
 - Preserve accessibility: semantic heading order, keyboard navigation, visible focus, text alternatives, reduced-motion behavior, and usable 390px layouts. Code and tables may scroll inside their own containers; the document must not scroll horizontally.
 
 ## Content conventions
@@ -39,9 +39,9 @@ Run `npm run verify` before committing or publishing. It must complete all of th
 1. Astro/TypeScript diagnostics with zero errors.
 2. Production static build and Pagefind Chinese index generation.
 3. Built-artifact tests for internal links, migrated content, metadata, RSS, sitemap, and search files.
-4. Isolated content integration tests for sorting, pagination, category pages, adjacent posts, and draft exclusion.
+4. Isolated content integration tests for unpaginated lists, sorting, category pages, adjacent posts, and draft exclusion.
 
-For layout or interaction changes, also inspect the production preview at 390px, 768px, and 1440px. Verify light/dark persistence, mobile menu keyboard behavior, search, table-of-contents anchors, and code copying when relevant. Store temporary screenshots only under ignored `.qa/`.
+For layout or interaction changes, also inspect the production preview at 390px, 768px, and 1440px. Verify light/dark persistence, navigation, search, table-of-contents anchors, and code copying when relevant. Store temporary screenshots only under ignored `.qa/`.
 
 ## Publishing
 

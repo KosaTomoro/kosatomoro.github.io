@@ -64,11 +64,11 @@ draft: false
 
 ## 个性化配置
 
-`src/config.ts` 集中维护姓名、简介、头像、GitHub 链接和项目清单；`src/styles/global.css` 中的 CSS 变量维护浅色与暗色主题。头像位于 `public/images/avatar.jpg`，来自自己的 GitHub 公开头像。
+`src/config.ts` 集中维护姓名、简介、头像和 GitHub 链接；`src/styles/global.css` 中的 CSS 变量维护浅色与暗色主题。头像位于 `public/images/avatar.jpg`，来自自己的 GitHub 公开头像。
 
-文章分类与分页配置位于 `src/lib/posts.ts`，默认每页 10 篇。旧文《短链接分库分表技术方案》迁移自 `KosaTomoro/zhihuijie1.github.io`；保留原始发布日期 2025-03-16，将 Liquid 标签页改成标准 Markdown 代码块。旧仓库不受影响。
+文章分类与排序逻辑位于 `src/lib/posts.ts`，文章页和分类页一次展示全部内容，不做分页。旧文《短链接分库分表技术方案》迁移自 `KosaTomoro/zhihuijie1.github.io`；保留原始发布日期 2025-03-16，将 Liquid 标签页改成标准 Markdown 代码块。旧仓库不受影响。
 
-设计借鉴 Polebug 的简洁阅读体验，本项目独立实现页面与样式，不使用对方文章、头像和互动场景。
+设计借鉴 Polebug 的简洁导航、留白和阅读体验，本项目独立实现页面与样式，不使用对方文章、头像和互动场景。首页是个人介绍，顶部导航固定为 About、Blog、Archive 和 GitHub。首次访问默认使用夜间模式，点击月亮切到日间模式后显示太阳，并在浏览器本地保存选择。
 
 ## GitHub Pages 部署
 
@@ -107,4 +107,4 @@ git push origin main
 - `npm test`：检查内部链接、文章迁移、RSS、站点地图、SEO 和页面输出。
 - `npm run test:content`：在临时副本生成 13 篇已发布测试文章和 1 篇草稿，验证分页、分类、排序和草稿排除；不会修改真实文章。
 
-无数据库、运行时 GitHub API 请求、评论服务或访客追踪。项目资料保存在本地配置，不依赖 GitHub 接口实时可用。
+无数据库、运行时 GitHub API 请求、评论服务或访客追踪。

@@ -49,6 +49,16 @@ test('site metadata and feeds use the production origin', () => {
   assert.match(read('robots.txt'), /https:\/\/kosatomoro\.github\.io\/sitemap-index.xml/);
 });
 
+test('home is an about page with the requested minimal navigation', () => {
+  const html = read('index.html');
+  for (const label of ['About', 'Blog', 'Archive', 'GitHub']) assert.match(html, new RegExp(`>${label}(?: |<)`));
+  assert.match(html, /Hi, I'm Kosa Tomoro\./);
+  assert.match(html, /这里是我的个人博客/);
+  assert.match(html, /theme : 'dark'/);
+  assert.doesNotMatch(html, /\/projects\/|fku-raft-kv|fku-balancer|把想法写成代码/);
+  assert.ok(!existsSync(join(dist, 'projects/index.html')));
+});
+
 test('empty categories have a helpful state and search has an index', () => {
   for (const category of ['tech', 'life']) {
     const html = read(`blog/category/${category}/index.html`);
