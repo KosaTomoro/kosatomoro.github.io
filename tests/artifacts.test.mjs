@@ -54,6 +54,11 @@ test('home is an about page with the requested minimal navigation', () => {
   for (const label of ['About', 'Blog', 'Archive', 'GitHub']) assert.match(html, new RegExp(`>${label}(?: |<)`));
   assert.match(html, /Hi, I'm Kosa Tomoro\./);
   assert.match(html, /这里是我的个人博客/);
+  assert.match(html, /src="\/images\/avatar\.jpg"[^>]+alt="Kosa Tomoro 的头像"/);
+  assert.match(html, /Born<\/dt><dd>2002\.12/);
+  assert.match(html, /2024\.10 — 2025\.2/);
+  assert.match(html, /2025\.6 — 2026\.12/);
+  assert.equal((html.match(/AI4SE-Agent/g) ?? []).length, 2);
   assert.match(html, /theme : 'dark'/);
   assert.doesNotMatch(html, /\/projects\/|fku-raft-kv|fku-balancer|把想法写成代码/);
   assert.ok(!existsSync(join(dist, 'projects/index.html')));

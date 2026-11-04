@@ -6,6 +6,11 @@ export const site = {
   motto: 'Read, reflect and contemplate.',
   url: 'https://kosatomoro.github.io',
   avatar: '/images/avatar.jpg',
+  birth: '2002.12',
+  experience: [
+    { period: '2024.10 — 2025.2', company: 'ByteDance', role: 'AI4SE-Agent' },
+    { period: '2025.6 — 2026.12', company: 'ByteDance', role: 'AI4SE-Agent' },
+  ],
   language: 'zh-CN',
   timezone: 'Asia/Shanghai',
   github: 'https://github.com/KosaTomoro',

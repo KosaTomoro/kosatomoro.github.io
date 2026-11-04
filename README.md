@@ -64,7 +64,7 @@ draft: false
 
 ## 个性化配置
 
-`src/config.ts` 集中维护姓名、简介、头像和 GitHub 链接；`src/styles/global.css` 中的 CSS 变量维护浅色与暗色主题。头像位于 `public/images/avatar.jpg`，来自自己的 GitHub 公开头像。
+`src/config.ts` 集中维护姓名、简介、头像、出生年月、工作经历和 GitHub 链接；`src/styles/global.css` 中的 CSS 变量维护浅色与暗色主题。头像位于 `public/images/avatar.jpg`，来自自己的 GitHub 公开头像。
 
 文章分类与排序逻辑位于 `src/lib/posts.ts`，文章页和分类页一次展示全部内容，不做分页。旧文《短链接分库分表技术方案》迁移自 `KosaTomoro/zhihuijie1.github.io`；保留原始发布日期 2025-03-16，将 Liquid 标签页改成标准 Markdown 代码块。旧仓库不受影响。
 

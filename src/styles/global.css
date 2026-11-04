@@ -52,16 +52,34 @@ svg { vertical-align: middle; flex-shrink: 0; }
 .text-link, .section-link { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; color: var(--accent); }
 .text-link:hover, .section-link:hover { text-decoration: underline; }
 .about-page { padding-block: 64px 104px; }
-.about-copy { max-width: 720px; }
-.about-heading { margin-bottom: 58px; }
+.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 82px; align-items: start; }
+.about-heading { grid-column: 2; margin-bottom: 58px; }
 .about-heading h1 { font: 500 clamp(40px, 5vw, 52px)/1.15 var(--serif); letter-spacing: -1.8px; margin-bottom: 8px; }
 .about-heading > p { color: var(--muted); font: italic 14px/1.7 var(--serif); letter-spacing: .15px; margin: 0; }
+.about-profile { grid-column: 1; grid-row: 1 / span 3; }
+.about-profile > img { display: block; width: 176px; height: 176px; object-fit: cover; border: 1px solid var(--line); border-radius: 50%; filter: saturate(.78); }
+.profile-details { width: 100%; max-width: 360px; margin-top: 21px; }
+.profile-name { font: 500 17px/1.5 var(--serif); margin-bottom: 15px; }
+.profile-details dl { margin: 0 0 15px; }
+.profile-details dl > div { display: flex; justify-content: space-between; gap: 14px; padding-block: 10px; border-block: 1px solid var(--line); }
+.profile-details dt, .profile-details dd, .profile-details a { color: var(--muted); font: 11px/1.5 var(--mono); }
+.profile-details dd { margin: 0; color: var(--text); }
+.profile-details a { display: inline-block; }
+.about-body { grid-column: 2; }
 .about-body h2 { font: 500 25px/1.5 var(--serif); letter-spacing: -.25px; margin-bottom: 27px; }
 .about-body p { max-width: 680px; color: var(--muted); font-size: 17px; line-height: 1.95; margin-bottom: 22px; }
-.about-body p:first-of-type { color: var(--text); }
+.about-body .about-lead { color: var(--text); }
+.experience { max-width: 440px; margin: 48px 0 0; padding-top: 37px; border-top: 1px solid var(--line); }
+.experience h2 { font: 500 21px/1.5 var(--serif); letter-spacing: -.2px; margin-bottom: 21px; }
+.experience ol { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--line); }
+.experience li { display: grid; grid-template-columns: 155px 1fr; gap: 20px; align-items: baseline; padding-block: 16px; border-top: 1px solid var(--line); }
+.experience-period { color: var(--muted); font: 11px/1.6 var(--mono); }
+.experience-position { display: flex; align-items: baseline; gap: 10px; }
+.experience-position strong { font-size: 15px; font-weight: 500; }
+.experience-position > span { color: var(--muted); font: 11px/1.5 var(--mono); }
 .signature { display: flex; flex-direction: column; gap: 2px; padding-top: 17px; font-family: var(--serif); }
 .signature strong { color: var(--text); font-size: 18px; font-weight: 500; }
-.about-links { display: flex; flex-wrap: wrap; gap: 26px; margin-top: 46px; padding-top: 24px; border-top: 1px solid var(--line); }
+.about-links { grid-column: 2; display: flex; flex-wrap: wrap; gap: 26px; margin-top: 46px; padding-top: 24px; border-top: 1px solid var(--line); }
 .about-links a { color: var(--muted); font-size: 13px; }
 .about-links a:hover { color: var(--accent); }
 .post-row { display: grid; grid-template-columns: 132px 1fr; gap: 30px; border-top: 1px solid var(--line); padding: 28px 0; }
@@ -133,6 +151,9 @@ button.text-link { background: transparent; border: 0; padding: 8px 0; }
 @media (max-width: 900px) {
   .shell { width: calc(100% - 64px); }
   .about-page { padding-top: 52px; }
+  .about-grid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); column-gap: 48px; }
+  .about-profile > img { width: 140px; height: 140px; }
+  .experience li { grid-template-columns: 1fr; gap: 5px; }
 }
 @media (max-width: 640px) {
   .shell { width: calc(100% - 60px); }
@@ -140,10 +161,21 @@ button.text-link { background: transparent; border: 0; padding: 8px 0; }
   .primary-nav { gap: 28px; font-size: 15px; }
   .icon-button { width: 36px; height: 36px; }
   .about-page { padding-block: 38px 68px; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-heading, .about-body, .about-links { grid-column: 1; }
   .about-heading { margin-bottom: 42px; }
   .about-heading h1 { font-size: 39px; letter-spacing: -1.3px; }
+  .about-profile { grid-column: 1; grid-row: auto; margin-bottom: 48px; }
+  .about-profile > img { width: 92px; height: 92px; }
+  .profile-details { width: 100%; max-width: none; }
+  .profile-name { margin-bottom: 9px; }
+  .profile-details dl { margin-bottom: 8px; }
+  .profile-details dl > div { padding-block: 7px; }
   .about-body h2 { font-size: 23px; margin-bottom: 23px; }
   .about-body p { font-size: 16px; line-height: 1.9; margin-bottom: 20px; }
+  .experience { max-width: none; margin-top: 38px; padding-top: 33px; }
+  .experience li { grid-template-columns: 1fr; gap: 5px; padding-block: 14px; }
+  .experience-position { justify-content: space-between; gap: 15px; }
   .about-links { margin-top: 38px; }
   .post-row { grid-template-columns: 1fr; gap: 11px; padding-block: 22px; }
   .post-date { flex-direction: row; gap: 12px; align-items: center; padding: 0; }
