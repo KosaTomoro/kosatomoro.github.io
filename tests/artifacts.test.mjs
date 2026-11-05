@@ -34,6 +34,16 @@ test('migration preserves the publication date and two complete highlighted code
   for (const match of html.matchAll(/href="#([^"]+)"/g)) assert.ok(html.includes(`id="${match[1]}"`), `Missing anchor ${match[1]}`);
 });
 
+test('reflection essay is published with its source link and closing line', () => {
+  const html = read('blog/what-i-learned-under-pressure/index.html');
+  assert.match(html, /工作这段时间，我在高压里想明白的几件事/);
+  assert.match(html, /datetime="2026-11-06"/);
+  assert.match(html, /href="https:\/\/www\.anthropic\.com\/claude-opus-5-5"/);
+  assert.match(html, /内寻思考，放肆表达/);
+  assert.match(read('blog/index.html'), /href="\/blog\/what-i-learned-under-pressure\/"/);
+  assert.match(read('rss.xml'), /https:\/\/kosatomoro\.github\.io\/blog\/what-i-learned-under-pressure\//);
+});
+
 test('site metadata and feeds use the production origin', () => {
   for (const file of pages) {
     const html = readFileSync(file, 'utf8');
