@@ -40,6 +40,8 @@ test('reflection essay is published with its source link and closing line', () =
   assert.match(html, /datetime="2026-11-06"/);
   assert.match(html, /href="https:\/\/www\.anthropic\.com\/claude-opus-5-5"/);
   assert.match(html, /内寻思考，放肆表达/);
+  assert.match(html, /class="article-content has-toc"/);
+  assert.ok(html.indexOf('class="article-toc"') < html.indexOf('class="article-reading"'), 'Table of contents should precede the reading column');
   assert.match(read('blog/index.html'), /href="\/blog\/what-i-learned-under-pressure\/"/);
   assert.match(read('rss.xml'), /https:\/\/kosatomoro\.github\.io\/blog\/what-i-learned-under-pressure\//);
 });

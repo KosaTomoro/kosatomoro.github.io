@@ -21,16 +21,20 @@ const toc = headings.filter(({ depth }) => depth === 2 || depth === 3);
         <p class="article-description" data-pagefind-meta="description">{post.data.description}</p>
         <div class="article-author"><span>{site.name}</span>{post.data.updated && <span>更新于 {dateLabel(post.data.updated)}</span>}</div>
       </header>
-      {toc.length > 0 && <details class="article-toc" open data-pagefind-ignore>
-        <summary>本文目录 <span>CONTENTS</span></summary>
-        <nav aria-label="文章目录"><ol>{toc.map(({ slug, text, depth }) => <li class:list={{ 'toc-nested': depth === 3 }}><a href={`#${slug}`}>{text}</a></li>)}</ol></nav>
-      </details>}
-      <div class="prose"><Content /></div>
-      <footer class="article-end" data-pagefind-ignore>
-        <div class="end-mark" aria-hidden="true">✳</div>
-        <p>感谢阅读。</p>
-        <div class="post-tags">{post.data.tags.map((tag) => <a href={tagUrl(tag)}>#{tag}</a>)}</div>
-      </footer>
+      <div class:list={['article-content', { 'has-toc': toc.length > 0 }]}>
+        {toc.length > 0 && <details class="article-toc" open data-pagefind-ignore>
+          <summary>本文目录 <span>CONTENTS</span></summary>
+          <nav aria-label="文章目录"><ol>{toc.map(({ slug, text, depth }) => <li class:list={{ 'toc-nested': depth === 3 }}><a href={`#${slug}`}>{text}</a></li>)}</ol></nav>
+        </details>}
+        <div class="article-reading">
+          <div class="prose"><Content /></div>
+          <footer class="article-end" data-pagefind-ignore>
+            <div class="end-mark" aria-hidden="true">✳</div>
+            <p>感谢阅读。</p>
+            <div class="post-tags">{post.data.tags.map((tag) => <a href={tagUrl(tag)}>#{tag}</a>)}</div>
+          </footer>
+        </div>
+      </div>
     </article>
     {(newer || older) && <nav class="post-navigation" aria-label="相邻文章">
       <div>{older && <a href={postUrl(older)}><span>← 上一篇</span><strong>{older.data.title}</strong></a>}</div>
