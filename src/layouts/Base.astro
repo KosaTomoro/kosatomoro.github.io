@@ -1,16 +1,23 @@
 ---
 import Header from '../components/Header.astro';
-import Icon from '../components/Icon.astro';
 import { site } from '../config';
+import { copy, getLocale, htmlLanguage, localPath, otherPath, type Locale } from '../i18n';
 import '../styles/global.css';
-interface Props { title?: string; description?: string; article?: boolean; published?: string; updated?: string; noindex?: boolean }
-const { title, description = site.description, article = false, published, updated, noindex = false } = Astro.props;
-const pageTitle = title ? `${title} · ${site.name}` : site.title;
-const canonical = new URL(Astro.url.pathname, site.url).href;
+interface Props {
+  title?: string; description?: string; article?: boolean; published?: string;
+  updated?: string; noindex?: boolean; locale?: Locale; alternate?: string | null;
+}
+const { title, article = false, published, updated, noindex = false, locale = getLocale(Astro.url.pathname), alternate = otherPath(Astro.url.pathname) } = Astro.props;
+const t = copy(locale);
+const description = Astro.props.description ?? t.description;
+const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · ${t.about}`;
+const canonical = new URL(Astro.url.pathname === '/404/' ? '/404.html' : Astro.url.pathname, site.url).href;
+const otherLocale = locale === 'zh' ? 'en' : 'zh';
+const chineseUrl = locale === 'zh' ? canonical : alternate ? new URL(alternate, site.url).href : null;
 const year = new Intl.DateTimeFormat('en', { timeZone: site.timezone, year: 'numeric' }).format(new Date());
 ---
 <!doctype html>
-<html lang={site.language}>
+<html lang={htmlLanguage(locale)}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,16 +26,20 @@ const year = new Intl.DateTimeFormat('en', { timeZone: site.timezone, year: 'num
     <meta name="description" content={description} />
     <meta name="author" content={site.name} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={htmlLanguage(locale)} href={canonical} />
+    {alternate && <link rel="alternate" hreflang={htmlLanguage(otherLocale)} href={new URL(alternate, site.url).href} />}
+    {chineseUrl && <link rel="alternate" hreflang="x-default" href={chineseUrl} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate" type="application/rss+xml" title={`${site.name} 的文章`} href={site.rss} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} · ${t.blog}`} href={localPath('/rss.xml', locale)} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale" content={locale === 'zh' ? 'zh_CN' : 'en_US'} />
+    {alternate && <meta property="og:locale:alternate" content={locale === 'zh' ? 'en_US' : 'zh_CN'} />}
     <meta property="og:image" content={new URL(site.avatar, site.url).href} />
-    <meta property="og:image:alt" content={`${site.name} 的头像`} />
+    <meta property="og:image:alt" content={t.avatar} />
     <meta name="twitter:card" content="summary" />
     {published && <meta property="article:published_time" content={`${published}T00:00:00+08:00`} />}
     {updated && <meta property="article:modified_time" content={`${updated}T00:00:00+08:00`} />}
@@ -42,15 +53,15 @@ const year = new Intl.DateTimeFormat('en', { timeZone: site.timezone, year: 'num
     </script>
   </head>
   <body>
-    <a href="#main" class="skip-link">跳到正文</a>
-    <Header />
+    <a href="#main" class="skip-link">{t.skip}</a>
+    <Header locale={locale} alternate={alternate} />
     <main id="main" tabindex="-1"><slot /></main>
     <footer class="site-footer shell">
-      <div><a class="footer-name" href="/">{site.name}</a><p>© {year} · 保持好奇，持续记录。</p></div>
+      <div class="footer-identity"><a class="footer-name" href={localPath('/', locale)}>{site.name}</a><span>© {year} · {t.footer}</span></div>
       <div class="footer-links">
-        <a href={site.github} target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} />GitHub<span class="sr-only">（新窗口）</span></a>
-        <a href={site.rss}><Icon name="rss" size={16} />RSS</a>
-        <a href="/tags/">标签</a>
+        <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub ↗<span class="sr-only">{t.newWindow}</span></a>
+        <a href={localPath('/rss.xml', locale)}>RSS</a>
+        <a href={localPath('/tags/', locale)}>{t.tags}</a>
       </div>
     </footer>
   </body>

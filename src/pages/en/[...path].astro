@@ -1,0 +1,38 @@
+---
+import AboutPage from '../../components/AboutPage.astro';
+import ArchivePage from '../../components/ArchivePage.astro';
+import BlogIndex from '../../components/BlogIndex.astro';
+import ArticlePage from '../../components/ArticlePage.astro';
+import TagsPage from '../../components/TagsPage.astro';
+import SearchPage from '../../components/SearchPage.astro';
+import List100Page from '../../components/List100Page.astro';
+import NotFoundPage from '../../components/NotFoundPage.astro';
+import { getPosts, categories, type Post } from '../../lib/posts';
+type Kind = 'about' | 'blog' | 'archive' | 'article' | 'tags' | 'search' | 'list' | '404';
+interface Props { kind: Kind; posts?: Post[]; category?: string; tag?: string; post?: Post; newer?: Post; older?: Post }
+export async function getStaticPaths() {
+  const posts = await getPosts('en');
+  const paths: {params:{path:string|undefined};props:Props}[] = [
+    {params:{path:undefined},props:{kind:'about'}},
+    {params:{path:'blog'},props:{kind:'blog',posts}},
+    {params:{path:'archive'},props:{kind:'archive'}},
+    {params:{path:'tags'},props:{kind:'tags'}},
+    {params:{path:'search'},props:{kind:'search'}},
+    {params:{path:'list-100'},props:{kind:'list'}},
+    {params:{path:'not-found'},props:{kind:'404'}},
+  ];
+  for(const category of categories) paths.push({params:{path:`blog/category/${category.slug}`},props:{kind:'blog',category:category.name,posts:posts.filter(({data})=>data.category===category.name)}});
+  for(const tag of new Set(posts.flatMap(({data})=>data.tags))) paths.push({params:{path:`tags/${tag}`},props:{kind:'tags',tag}});
+  posts.forEach((post,index)=>paths.push({params:{path:`blog/${post.id}`},props:{kind:'article',post,newer:posts[index-1],older:posts[index+1]}}));
+  return paths;
+}
+const {kind,posts=[],category,tag,post,newer,older}=Astro.props;
+---
+{kind==='about' && <AboutPage />}
+{kind==='blog' && <BlogIndex posts={posts} count={posts.length} category={category} />}
+{kind==='archive' && <ArchivePage />}
+{kind==='article' && post && <ArticlePage post={post} newer={newer} older={older} />}
+{kind==='tags' && <TagsPage tag={tag} />}
+{kind==='search' && <SearchPage />}
+{kind==='list' && <List100Page />}
+{kind==='404' && <NotFoundPage />}

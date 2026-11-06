@@ -5,7 +5,10 @@ export default defineConfig({
   site: 'https://kosatomoro.github.io',
   output: 'static',
   trailingSlash: 'always',
-  integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') && !page.endsWith('/search/') })],
+  integrations: [sitemap({
+    filter: (page) => !/\/(404|not-found|search)\/?$/.test(page),
+    i18n: { defaultLocale: 'zh', locales: { zh: 'zh-CN', en: 'en' } },
+  })],
   markdown: {
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },

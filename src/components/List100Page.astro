@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy, getLocale, localPath } from '../i18n';
+import { lifeList, type LifeStatus } from '../data/list100';
+const locale = getLocale(Astro.url.pathname);
+const t = copy(locale);
+const items = [...lifeList].sort((a,b) => a.id-b.id);
+const completed = items.filter(item => item.status === 'done').length;
+const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.done};
+---
+<Base title="List100" description={`${t.listIntro} ${t.listIntroTwo}`}>
+  <div class="shell page-content list-page">
+    <header class="page-heading"><p class="eyebrow">{t.listEyebrow}</p><h1 class="list-heading">List100<span class="accent">.</span></h1><p>{t.listIntro}<br />{t.listIntroTwo}</p></header>
+    <div class="progress-summary"><span><strong>{completed} {locale === 'zh' ? '项已完成' : 'completed'}</strong> / {t.possibilities}</span><span>{t.future}</span></div>
+    <div class="list-progress" role="img" aria-label={locale === 'zh' ? `100 个位置中，${completed} 项已完成` : `${completed} completed out of 100 possible entries`}>
+      {Array.from({length:100},(_,i) => <span class:list={{done:i<completed}}></span>)}
+    </div>
+    <div class="list-toolbar life-toolbar" hidden><div class="category-tabs" role="group" aria-label={t.filter}>
+      {(['all','todo','doing','done'] as const).map(status => <button type="button" data-life-filter={status} aria-pressed={status==='all'}>{status==='all'?t.all:statuses[status]}</button>)}
+    </div></div>
+    <ol class="life-list">{items.map(item => <li class="life-item" data-status={item.status}>
+      <span class="life-number">{String(item.id).padStart(2,'0')}</span><span class="status-icon" aria-hidden="true">{item.status==='done'?'✓':''}</span>
+      <div><h2>{item.title[locale]}</h2>{item.description && <p>{item.description[locale]}</p>}
+        {item.completed && <time datetime={item.completed}>{item.completed}</time>}
+        {item.post && <a class="text-link" href={localPath(`/blog/${item.post}/`,locale)}>{t.listArticle} →</a>}
+      </div><span class="status-text">{statuses[item.status]}</span>
+    </li>)}</ol>
+    <p class="list-empty" role="status" hidden>{t.noListMatch}</p>
+    <p class="list-closing">{t.listClosing}</p><p class="list-credit">{t.inspired} <a href="https://huyenchip.com/list-100/" target="_blank" rel="noopener noreferrer">Chip Huyen’s List 100 ↗<span class="sr-only">{t.newWindow}</span></a></p>
+  </div>
+</Base>
+<script>
+  const toolbar = document.querySelector<HTMLElement>('.life-toolbar');
+  if (toolbar) toolbar.hidden = false;
+  document.querySelectorAll<HTMLButtonElement>('[data-life-filter]').forEach(button => button.addEventListener('click', () => {
+    const filter = button.dataset.lifeFilter;
+    document.querySelectorAll('[data-life-filter]').forEach(item => item.setAttribute('aria-pressed', String(item===button)));
+    let count = 0;
+    document.querySelectorAll<HTMLElement>('.life-item').forEach(item => {
+      item.hidden = filter !== 'all' && item.dataset.status !== filter;
+      if (!item.hidden) count++;
+    });
+    const empty = document.querySelector<HTMLElement>('.list-empty');
+    if (empty) empty.hidden = count > 0;
+  }));
+</script>

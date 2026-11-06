@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from './PostList.astro';
+import { getPosts, tagUrl } from '../lib/posts';
+import { copy, getLocale, localPath, tagName, articleCount } from '../i18n';
+interface Props { tag?: string }
+const { tag } = Astro.props;
+const locale = getLocale(Astro.url.pathname);
+const t = copy(locale);
+const posts = await getPosts(locale);
+const tags = [...new Set(posts.flatMap(({data}) => data.tags))].sort((a,b) => tagName(a,locale).localeCompare(tagName(b,locale),locale));
+const selected = tag ? posts.filter(({data}) => data.tags.includes(tag)) : [];
+const otherLocale = locale === 'zh' ? 'en' : 'zh';
+const otherPosts = tag ? await getPosts(otherLocale) : [];
+const alternate = tag ? (otherPosts.some(({data}) => data.tags.includes(tag)) ? tagUrl(tag,otherLocale) : null) : localPath('/tags/',otherLocale);
+---
+<Base title={tag ? `${t.tags}: ${tagName(tag,locale)}` : t.tags} alternate={alternate}>
+  <div class="shell page-content">
+    {tag && <a class="back-link" href={localPath('/tags/',locale)}>← {t.allTags}</a>}
+    <header class:list={['page-heading', {'compact-heading':tag}]}>
+      <p class="eyebrow">{tag ? t.topic : t.tagsEyebrow}</p><h1>{tag ? `#${tagName(tag,locale)}` : t.tags}<span class="accent">.</span></h1>
+      <p>{tag ? articleCount(selected.length,locale) : t.tagsIntro}</p>
+    </header>
+    {tag ? <PostList posts={selected} /> : <div class="tag-cloud">{tags.map(item => <a href={tagUrl(item,locale)}><span>#{tagName(item,locale)}</span><span class="tag-count">{posts.filter(({data}) => data.tags.includes(item)).length}</span></a>)}</div>}
+    {!tags.length && <p class="empty-state">{t.noTags}</p>}
+  </div>
+</Base>

@@ -49,7 +49,7 @@ test('reflection essay is published with its source link and closing line', () =
 test('site metadata and feeds use the production origin', () => {
   for (const file of pages) {
     const html = readFileSync(file, 'utf8');
-    assert.match(html, /lang="zh-CN"/);
+    assert.match(html, file.includes(`${dist}/en/`) ? /lang="en"/ : /lang="zh-CN"/);
     assert.match(html, /rel="canonical" href="https:\/\/kosatomoro\.github\.io\//);
     assert.match(html, /property="og:title"/);
     assert.match(html, /name="description"/);
@@ -63,11 +63,10 @@ test('site metadata and feeds use the production origin', () => {
 
 test('home is an about page with the requested minimal navigation', () => {
   const html = read('index.html');
-  for (const label of ['About', 'Blog', 'Archive', 'GitHub']) assert.match(html, new RegExp(`>${label}(?: |<)`));
-  assert.match(html, /Hi, I'm Kosa Tomoro\./);
-  assert.match(html, /这里是我的个人博客/);
+  for (const label of ['关于', '文章', '归档', 'List100', 'GitHub']) assert.match(html, new RegExp(`>${label}(?: |<)`));
+  assert.match(html, /你好，欢迎来到我的个人博客/);
   assert.match(html, /src="\/images\/avatar\.jpg"[^>]+alt="Kosa Tomoro 的头像"/);
-  assert.match(html, /Born<\/dt><dd>2002\.12/);
+  assert.match(html, /datetime="2002-12">2002\.12/);
   assert.match(html, /2024\.10 — 2025\.2/);
   assert.match(html, /2025\.6 — 2026\.12/);
   assert.equal((html.match(/AI4SE-Agent/g) ?? []).length, 2);
@@ -86,4 +85,46 @@ test('empty categories have a helpful state and search has an index', () => {
   assert.ok(existsSync(join(dist, 'pagefind/pagefind-entry.json')));
   assert.match(read('search/index.html'), /role="search"/);
   assert.match(read('404.html'), /页面未找到/);
+});
+
+test('bilingual pages, alternates, RSS and search indexes are complete', () => {
+  for (const slug of ['short-link-sharding', 'what-i-learned-under-pressure']) {
+    const zh = read(`blog/${slug}/index.html`);
+    const en = read(`en/blog/${slug}/index.html`);
+    assert.match(zh, new RegExp(`hreflang="en" href="https://kosatomoro.github.io/en/blog/${slug}/"`));
+    assert.match(en, new RegExp(`hreflang="zh-CN" href="https://kosatomoro.github.io/blog/${slug}/"`));
+    assert.match(en, /data-pagefind-body/);
+    assert.equal((en.match(/<h[23]\b/g) ?? []).length, (zh.match(/<h[23]\b/g) ?? []).length);
+    assert.match(read('en/rss.xml'), new RegExp(`https://kosatomoro.github.io/en/blog/${slug}/`));
+  }
+  const english = read('en/blog/what-i-learned-under-pressure/index.html');
+  assert.match(english, /Build a public body of work/);
+  assert.match(english, /Think inward. Express freely./);
+  assert.match(english, /datetime="2026-11-06"/);
+  const codeBlocks = path => [...readFileSync(path,'utf8').matchAll(/\x60\x60\x60yaml\n([\s\S]*?)\x60\x60\x60/g)].map(match => match[1]);
+  assert.deepEqual(codeBlocks('src/content/en/short-link-sharding.md'), codeBlocks('src/content/blog/short-link-sharding.md'));
+  assert.equal((read('en/blog/short-link-sharding/index.html').match(/<pre\b/g) ?? []).length,2);
+  const index = JSON.parse(read('pagefind/pagefind-entry.json'));
+  assert.equal(index.languages['zh-cn'].page_count, 2);
+  assert.equal(index.languages.en.page_count, 2);
+  assert.match(read('sitemap-0.xml'), /hreflang="en"/);
+  assert.match(read('sitemap-0.xml'), /hreflang="zh-CN"/);
+  for (const file of pages) {
+    const html = readFileSync(file,'utf8');
+    for (const [,href] of html.matchAll(/<link rel="alternate" hreflang="[^"]+" href="([^"]+)"/g)) {
+      const path = decodeURIComponent(new URL(href).pathname);
+      const target = join(dist,path);
+      assert.ok(existsSync(target), `Missing alternate ${href}`);
+    }
+  }
+});
+
+test('List100 publishes only the confirmed entry in both languages', () => {
+  for(const prefix of ['', 'en/']) {
+    const html = read(`${prefix}list-100/index.html`);
+    assert.equal((html.match(/class="life-item"/g) ?? []).length,1);
+    assert.match(html,/data-status="done"/);
+    assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
+    assert.match(read(`${prefix}index.html`),new RegExp(`href="/${prefix}list-100/"`));
+  }
 });

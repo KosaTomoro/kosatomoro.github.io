@@ -1,0 +1,76 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { site } from '../config';
+import { postUrl, dateLabel, tagUrl, type Post } from '../lib/posts';
+import { copy, categoryName, tagName, localPath } from '../i18n';
+interface Props { post: Post; newer?: Post; older?: Post }
+const { post, newer, older } = Astro.props;
+const locale = post.locale;
+const t = copy(locale);
+const { Content, headings } = await render(locale === 'en' && post.translation ? post.translation : post);
+const toc = headings.filter(({ depth }) => depth === 2 || depth === 3);
+const alternate = post.translation ? postUrl(post, locale === 'zh' ? 'en' : 'zh') : null;
+---
+<Base title={post.data.title} description={post.data.description} article published={post.data.date} updated={post.data.updated} alternate={alternate}>
+  <div class="article-shell">
+    <article data-pagefind-body>
+      <div class:list={['article-content', { 'has-toc': toc.length > 0 }]}>
+        {toc.length > 0 && <details class="article-toc" open data-pagefind-ignore>
+          <summary>{t.contents}</summary>
+          <nav aria-label={t.articleNav}><ol>{toc.map(({ slug, text, depth }) => <li class:list={{ 'toc-nested': depth === 3 }}><a href={`#${slug}`}>{text}</a></li>)}</ol></nav>
+        </details>}
+        <div class="article-reading">
+          <header class="article-header">
+            <div class="post-date"><a href={localPath('/blog/',locale)} data-pagefind-ignore>← {t.allPosts}</a><span aria-hidden="true">·</span><time datetime={post.data.date}>{dateLabel(post.data.date)}</time><span aria-hidden="true">·</span><span data-pagefind-filter="category">{categoryName(post.data.category,locale)}</span></div>
+            <h1 data-pagefind-meta="title">{post.data.title}</h1>
+            <p class="article-description" data-pagefind-meta="description">{post.data.description}</p>
+            <div class="article-author"><span>{site.name}</span>{post.data.updated && <span>{t.updated} {dateLabel(post.data.updated)}</span>}</div>
+          </header>
+          <div class="prose"><Content /></div>
+          <footer class="article-end" data-pagefind-ignore><p>{t.thanks}</p><div class="post-tags">{post.data.tags.map(tag => <a href={tagUrl(tag,locale)}>#{tagName(tag,locale)}</a>)}</div></footer>
+        </div>
+      </div>
+    </article>
+    {(newer || older) && <nav class="post-navigation" aria-label={t.neighbors}>
+      <div>{older && <a href={postUrl(older)}><span>← {t.previous}</span><strong>{older.data.title}</strong></a>}</div>
+      <div>{newer && <a href={postUrl(newer)}><span>{t.next} →</span><strong>{newer.data.title}</strong></a>}</div>
+    </nav>}
+    <div class="article-bottom"><a class="text-link" href={localPath('/blog/',locale)}>← {t.returnBlog}</a><a class="text-link" href={localPath('/rss.xml',locale)}>{t.subscribe} →</a></div>
+  </div>
+</Base>
+<script>
+  import { copy, getLocale } from '../i18n';
+  const t = copy(getLocale(location.pathname));
+  const toc = document.querySelector<HTMLDetailsElement>('.article-toc');
+  const narrow = matchMedia('(max-width: 620px)');
+  const syncToc = () => { if (toc) toc.open = !narrow.matches; };
+  syncToc();
+  narrow.addEventListener('change', syncToc);
+  toc?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    if (narrow.matches && toc) toc.open = false;
+  }));
+  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre => {
+    const container = document.createElement('div');
+    container.className = 'code-block';
+    pre.before(container); container.append(pre);
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'copy-code';
+    button.textContent = t.copy; button.setAttribute('aria-label',t.copyLabel);
+    container.append(button);
+    const status = document.createElement('span');
+    status.className = 'sr-only'; status.setAttribute('role','status'); container.append(status);
+    pre.tabIndex = 0; pre.setAttribute('aria-label',t.codeScroll);
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? '');
+        button.textContent = t.copied; status.textContent = t.copiedStatus;
+      } catch {
+        const range = document.createRange(); range.selectNodeContents(pre);
+        const selection = window.getSelection(); selection?.removeAllRanges(); selection?.addRange(range);
+        button.textContent = t.manualCopy; status.textContent = t.manualCopyStatus;
+      }
+      window.setTimeout(() => { button.textContent = t.copy; status.textContent = ''; },2400);
+    });
+  });
+</script>

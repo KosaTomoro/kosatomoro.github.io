@@ -1,8 +1,11 @@
 # Kosa Tomoro 的个人博客
 
-中文个人博客，记录技术实践、阅读与生活。采用 Astro、TypeScript、原生 CSS 和 Pagefind，构建为静态文件，托管于 GitHub Pages。
+Kosa Tomoro 的中英文个人博客，记录技术实践、阅读与生活。站点使用 Astro、TypeScript、原生 CSS 和 Pagefind 构建为静态文件，通过 GitHub Actions 发布到 GitHub Pages。
 
-正式地址：<https://kosatomoro.github.io/>。仓库：<https://github.com/KosaTomoro/kosatomoro.github.io>。
+- 正式地址：<https://kosatomoro.github.io/>
+- 源码仓库：<https://github.com/KosaTomoro/kosatomoro.github.io>
+- 中文位于根路径，英文位于 `/en/`
+- 默认使用夜间模式，可在顶部切换主题与语言
 
 ## 本地启动
 
@@ -15,96 +18,133 @@ npm ci
 npm run dev
 ```
 
-开发服务器一般在 `http://127.0.0.1:4321`。搜索索引在生产构建后生成；验证搜索、部署内容时使用：
+开发服务器通常位于 `http://127.0.0.1:4321`。开发模式不会生成 Pagefind 索引；验证搜索和最终构建时使用：
 
 ```sh
 npm run verify
 npm run preview
 ```
 
-`verify` 包含 Astro 类型检查、生产构建、中文搜索索引生成和构建产物检查。预览服务器端口以终端输出为准。
+`verify` 会依次执行 Astro 类型检查、生产构建、中英文搜索索引生成、构建产物检查和内容集成测试。
 
-## 写一篇文章
+## 写一篇中文文章
 
 ```sh
 npm run new -- my-first-post
 ```
 
-编辑 `src/content/blog/my-first-post.md`，也可以复制 `templates/post.md`。文件名使用小写英文与短横线；它决定永久链接，改标题不会改链接。文章放在此目录的顶层，不嵌套目录。
+编辑 `src/content/blog/my-first-post.md`，也可以复制 `templates/post.md`。文件名使用小写英文和短横线，它既是中英文文章的稳定 ID，也是永久链接的一部分；已发布后不要随标题一起修改。
 
 ```yaml
 ---
 title: "一次值得记录的实践"
 description: "这篇文章讲了什么，以及读者会收获什么。"
-date: "2026-11-05"
+date: "2026-11-06"
 category: 技术
 tags: [Go, 分布式系统]
 draft: false
 ---
 ```
 
-- `date` 必须用引号包住，格式 `YYYY-MM-DD`，按上海时区展示。
-- `category` 是 `技术` 或 `生活`；标签自由填写，建议简短。
-- `draft: true` 不生成页面，也不进入搜索、订阅、归档和站点地图；确认可发布后改为 `false`。
-- `updated: "2026-11-06"` 可选，用来注明实质更新日期。
-- 草稿文件仍会随 Git 提交保存在公开仓库，`draft` 不是保密功能。暂不公开的内容请留在仓库外。
-- 本地预览正文时也需要临时设置 `draft: false`；提交前自行恢复或正式发布。
-- 标题自动形成目录，代码块注明语言即可高亮，页面会提供复制按钮。
-- 使用 RSS 摘要订阅，读者点击标题可阅读全文。
+- `date` 必须用引号包住，格式为 `YYYY-MM-DD`，按上海时区展示。
+- `category` 只能是 `技术` 或 `生活`；标签可以自由填写。
+- `updated: "2026-11-06"` 可选，用于注明实质更新日期。
+- `draft: true` 不生成页面，也不会进入搜索、订阅、归档、标签或站点地图。
+- `draft` 不是保密功能：提交到公开仓库的草稿仍可被看到，未公开内容请留在仓库外。
+- Markdown 标题会生成文章目录；代码块注明语言即可获得高亮和复制按钮。
 
-### 插入图片
+## 添加英文译文
 
-将图片放入 `public/images/posts/文章名/`，使用站点根路径引用：
+英文译文必须与中文原文使用相同文件名：
+
+```sh
+npm run new -- my-first-post --en
+```
+
+编辑 `src/content/en/my-first-post.md`：
+
+```yaml
+---
+title: "A Practice Worth Remembering"
+description: "What happened, what changed, and what the reader can take away."
+draft: false
+---
+```
+
+英文译文会继承中文原文的日期、分类和标签。没有同名中文原文时，脚本不会创建译文；中文原文或英文译文仍为草稿时，该英文页面不会发布。文章没有译文时，语言按钮会显示为不可用，避免把读者带到错误页面。
+
+Pagefind 会依据页面的 `lang` 分别生成中文与英文索引，因此英文搜索只返回英文文章，中文搜索只返回中文文章。
+
+## 插入图片
+
+将图片放在 `public/images/posts/<slug>/`，使用站点根路径引用：
 
 ```markdown
 ![图片的简短说明](/images/posts/my-first-post/diagram.webp)
 ```
 
-优先使用适度压缩的 WebP、PNG 或 JPEG。宽图和表格会适配屏幕，代码超宽时局部滚动。
+优先使用适度压缩的 WebP、PNG 或 JPEG。宽图、表格和代码块只在自身容器内横向滚动，不应让整页产生横向滚动。
 
-## 个性化配置
+## 维护 List100
 
-`src/config.ts` 集中维护姓名、简介、头像、出生年月、工作经历和 GitHub 链接；`src/styles/global.css` 中的 CSS 变量维护浅色与暗色主题。头像位于 `public/images/avatar.jpg`，来自自己的 GitHub 公开头像。
+List100 页面位于 `/list-100/` 和 `/en/list-100/`，数据集中保存在 `src/data/list100.ts`。只添加本人已经确认的目标，不使用示例目标填充空位。每项 ID 必须是 1–100 之间的唯一整数，发布后保持稳定。
 
-文章分类与排序逻辑位于 `src/lib/posts.ts`，文章页和分类页一次展示全部内容，不做分页。旧文《短链接分库分表技术方案》迁移自 `KosaTomoro/zhihuijie1.github.io`；保留原始发布日期 2025-03-16，将 Liquid 标签页改成标准 Markdown 代码块。旧仓库不受影响。
+```ts
+{
+  id: 2,
+  status: 'todo', // todo | doing | done
+  title: { zh: '一件想做的事', en: 'Something I want to do' },
+  description: { zh: '可选说明', en: 'Optional note' },
+}
+```
 
-设计借鉴 Polebug 的简洁导航、留白和阅读体验，本项目独立实现页面与样式，不使用对方文章、头像和互动场景。首页是个人介绍，顶部导航固定为 About、Blog、Archive 和 GitHub。首次访问默认使用夜间模式，点击月亮切到日间模式后显示太阳，并在浏览器本地保存选择。
+可选字段 `completed` 使用 `YYYY-MM-DD`，`post` 可填写关联文章的 slug。
 
-## GitHub Pages 部署
+## 个性化配置与设计
 
-首次部署：
+- `src/config.ts`：姓名、简介、头像、出生年月、工作经历和 GitHub 链接。
+- `src/i18n.ts`：中英文界面文案、分类和标签译名。
+- `src/styles/global.css`：站点主题、布局和响应式样式。
+- `src/styles/article.css`：文章正文与目录样式。
+- `public/images/avatar.jpg`：个人头像。
 
-1. 在 KosaTomoro 下创建公开仓库 `kosatomoro.github.io`，推送本项目到 `main`。
-2. 在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
-3. 在 Actions 页面查看 `Check and deploy blog` 工作流。若初次运行早于 Pages 启用，可在配置完成后重新运行。
-4. 成功后访问 `https://kosatomoro.github.io/`，验证首页、文章和搜索。
+首页采用两栏个人介绍，文章页在宽屏使用左侧固定目录、右侧正文，在移动端将目录折叠到正文上方。文章列表不分页，一次展示全部已发布内容。设计借鉴 Polebug 的简洁导航、留白和阅读氛围，但页面、样式和内容均独立实现。
 
-后续发布：
+旧文《短链接分库分表技术方案》迁移自 `KosaTomoro/zhihuijie1.github.io`，保留原始日期 2025-03-16，并将 Liquid 标签页转换为标准 Markdown 代码块；旧仓库不受本项目影响。
+
+## 发布到 GitHub Pages
+
+仓库 **Settings → Pages → Build and deployment → Source** 应选择 **GitHub Actions**。推送到 `main` 后，`Check and deploy blog` 工作流会检查、构建并部署；Pull Request 只检查，不发布。
+
+发布前执行：
 
 ```sh
 npm run verify
-git add .
-git commit -m "Write a new post"
+git status --short
+git add README.md src/content/blog/my-first-post.md src/content/en/my-first-post.md
+git diff --cached --check
+git commit -m "Publish my first post"
 git push origin main
 ```
 
-也可以直接在 GitHub 网页编辑 Markdown 并提交。PR 只检查、不发布；合入 `main` 后自动部署。只有全部检查通过才上传并发布构建产物。依赖锁文件必须一同提交。
+请显式暂存本次需要的文件，不要习惯性使用 `git add .`，以免把本地草稿、截图或临时文件一起发布。依赖发生变化时记得提交 `package-lock.json`。
 
-若启用了分支保护，通过 PR 合并，不要强制推送绕过检查。
+部署完成后检查首页、一个文章深层链接、中文与英文搜索、`/rss.xml`、`/en/rss.xml` 和站点地图。
 
 ### 回滚
 
-找到需要撤回的提交，执行 `git revert <commit-sha>` 并推送 `main`；工作流会重新构建并部署。不要用 `git reset --hard` 或强推改写历史来回滚线上版本。
+找到需要撤回的提交，执行 `git revert <commit-sha>` 并推送 `main`；工作流会重新构建和部署。不要使用强制推送或 `git reset --hard` 改写线上历史。
 
 ### 更换域名
 
-修改 `src/config.ts` 的 `url` 与 `astro.config.mjs` 的 `site`，添加 `public/CNAME`，再配置 GitHub Pages 和域名 DNS。当前按个人主页根路径部署，不需要配置仓库子路径。
+修改 `src/config.ts` 的 `url` 与 `astro.config.mjs` 的 `site`，添加 `public/CNAME`，再配置 GitHub Pages 和 DNS。当前个人主页仓库部署在域名根路径，不需要 Astro `base`。
 
-## 检查项
+## 检查命令
 
-- `npm run check`：类型与 Astro 模板检查。
-- `npm run build`：生成 `dist` 与 Pagefind 中文索引。
-- `npm test`：检查内部链接、文章迁移、RSS、站点地图、SEO 和页面输出。
-- `npm run test:content`：在临时副本生成 13 篇已发布测试文章和 1 篇草稿，验证分页、分类、排序和草稿排除；不会修改真实文章。
+- `npm run check`：Astro 与 TypeScript 检查。
+- `npm run build`：生成 `dist` 和 Pagefind 多语言索引。
+- `npm test`：检查内部链接、双语路由、hreflang、迁移内容、RSS、站点地图、List100 和搜索文件。
+- `npm run test:content`：在临时副本验证排序、相邻文章、翻译回退、搜索语言隔离，以及原文/译文草稿与孤立译文的排除。
+- `npm run verify`：执行全部发布前检查。
 
-无数据库、运行时 GitHub API 请求、评论服务或访客追踪。
+站点不使用数据库、运行时 GitHub API、分析追踪、评论服务或写作后台。

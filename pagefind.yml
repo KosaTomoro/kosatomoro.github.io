@@ -1,3 +1,2 @@
 site: dist
-glob: "blog/**/index.html"
-force_language: zh-CN
+glob: "**/*.html"

@@ -21,6 +21,15 @@ try {
   for (let i = 1; i <= 11; i++) post(`fixture-tech-${i}`, '技术', false, `2026-01-${String(i).padStart(2, '0')}`);
   post('fixture-life', '生活');
   post('draft-never-publish', '技术', true);
+  rmSync(join(work, 'src/content/en'), { recursive: true });
+  mkdirSync(join(work, 'src/content/en'), { recursive: true });
+  const translate = (id, draft = false) => writeFileSync(join(work, 'src/content/en', id + '.md'),
+    '---\ntitle: "English ' + id + '"\ndescription: "Translated integration fixture"\ndraft: ' + draft + '\n---\n\nEnglish translated fixture body.\n');
+  translate('fixture-baseline');
+  translate('fixture-life');
+  translate('draft-never-publish'); // A published translation cannot expose a draft source.
+  translate('orphan-translation'); // A translation without a source cannot become a page.
+  translate('fixture-tech-11', true);
   const build = spawnSync(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build'], { cwd: work, encoding: 'utf8', env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' } });
   assert.equal(build.status, 0, build.stdout + build.stderr);
   const read = (path) => readFileSync(join(work, 'dist', path), 'utf8');
@@ -39,7 +48,25 @@ try {
   for (const path of ['index.html', 'blog/index.html', 'archive/index.html', 'tags/index.html', 'rss.xml', 'sitemap-0.xml']) assert.doesNotMatch(read(path), /draft-never-publish|draft-only-tag/);
   assert.match(read('blog/fixture-tech-11/index.html'), /fixture-life/);
   assert.match(read('blog/fixture-tech-11/index.html'), /fixture-tech-10/);
-  console.log('Content integration passed: 13 published posts, unpaginated lists, ordering, neighbors, and draft exclusion.');
+  assert.equal(rowCount(read('en/blog/index.html')), 2);
+  assert.equal(rowCount(read('en/blog/category/tech/index.html')), 1);
+  assert.equal(rowCount(read('en/blog/category/life/index.html')), 1);
+  for (const id of ['draft-never-publish','orphan-translation','fixture-tech-11']) {
+    assert.equal(existsSync(join(work,'dist/en/blog',id)),false);
+    for (const path of ['en/blog/index.html','en/archive/index.html','en/tags/index.html','en/rss.xml','sitemap-0.xml']) {
+      if (path === 'sitemap-0.xml' && id === 'fixture-tech-11') continue;
+      assert.ok(!read(path).includes(id), path + ' leaked ' + id);
+    }
+  }
+  assert.doesNotMatch(read('blog/fixture-tech-11/index.html'), /hreflang="en"/);
+  assert.match(read('blog/fixture-tech-11/index.html'), /暂时没有英文版本/);
+  assert.match(read('en/blog/fixture-life/index.html'), /fixture-baseline/);
+  const index = spawnSync(process.execPath, [join(root,'node_modules/pagefind/lib/runner/bin.cjs'),'--site','dist'], {cwd:work,encoding:'utf8'});
+  assert.equal(index.status,0,index.stdout+index.stderr);
+  const search = JSON.parse(read('pagefind/pagefind-entry.json'));
+  assert.equal(search.languages['zh-cn'].page_count,13);
+  assert.equal(search.languages.en.page_count,2);
+  console.log('Content integration passed: 13 Chinese and 2 English posts; sorting, neighbors, translation fallback, orphan/draft exclusion, and separate search indexes.');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }

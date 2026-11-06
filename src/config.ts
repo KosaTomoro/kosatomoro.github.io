@@ -7,6 +7,8 @@ export const site = {
   url: 'https://kosatomoro.github.io',
   avatar: '/images/avatar.jpg',
   birth: '2002.12',
+  birthDate: '2002-12',
+  profileRole: 'AI4SE · Agent',
   experience: [
     { period: '2024.10 — 2025.2', company: 'ByteDance', role: 'AI4SE-Agent' },
     { period: '2025.6 — 2026.12', company: 'ByteDance', role: 'AI4SE-Agent' },

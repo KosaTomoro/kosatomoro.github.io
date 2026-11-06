@@ -1,17 +1,4 @@
 ---
-import Base from '../layouts/Base.astro';
-import { getPosts, postUrl, dateLabel } from '../lib/posts';
-const posts = await getPosts();
-const years = [...new Set(posts.map(({ data }) => data.date.slice(0, 4)))];
+import Page from '../components/ArchivePage.astro';
 ---
-<Base title="归档">
-  <div class="shell page-content">
-    <header class="page-heading"><span class="eyebrow">THROUGH THE YEARS</span><h1>时间里的文字<span class="accent">。</span></h1><p>一篇一篇，留下思考的坐标。共 {posts.length} 篇文章。</p></header>
-    <div class="archive-list">{years.map((year) => <section class="archive-year" aria-labelledby={`year-${year}`}>
-      <h2 id={`year-${year}`}>{year}<span>{posts.filter(({ data }) => data.date.startsWith(year)).length} 篇</span></h2>
-      <ul>{posts.filter(({ data }) => data.date.startsWith(year)).map((post) => <li><time datetime={post.data.date}>{dateLabel(post.data.date).slice(5)}</time><a href={postUrl(post)}>{post.data.title}</a><span class="archive-category">{post.data.category}</span></li>)}</ul>
-    </section>)}</div>
-    {!posts.length && <p class="empty-state">还没有发布的文章。</p>}
-    <div class="browse-note"><span>换一种方式浏览</span><a href="/tags/">按标签寻找 ↗</a></div>
-  </div>
-</Base>
+<Page />

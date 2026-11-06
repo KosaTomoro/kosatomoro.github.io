@@ -26,4 +26,15 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+// English translations share their filename with the Chinese source. Metadata
+// such as publication date, category and tags always comes from that source.
+const translations = defineCollection({
+  loader: glob({ base: './src/content/en', pattern: '*.md', generateId: ({ entry }) => entry.replace(/\.md$/, '') }),
+  schema: z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    draft: z.boolean().default(true),
+  }),
+});
+
+export const collections = { blog, translations };

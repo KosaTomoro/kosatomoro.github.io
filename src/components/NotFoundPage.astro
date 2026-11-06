@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { copy, getLocale, localPath } from '../i18n';
+const locale = getLocale(Astro.url.pathname);
+const t = copy(locale);
+---
+<Base title={t.notFound} noindex alternate={locale === 'zh' ? '/en/not-found/' : '/404.html'}>
+  <div class="shell page-content not-found"><p class="eyebrow">{t.detour}</p><div class="error-number" aria-hidden="true">404<span class="accent">.</span></div><h1>{t.lost}</h1><p>{t.lostIntro}</p><div class="not-found-links"><a class="text-link" href={localPath('/',locale)}>{t.home} →</a><a class="text-link" href={localPath('/blog/',locale)}>{t.viewBlog} →</a></div></div>
+</Base>
+<script>
+  // GitHub Pages serves the root 404 document for missing English URLs too.
+  if (location.pathname.startsWith('/en/') && !location.pathname.startsWith('/en/not-found/')) {
+    location.replace('/en/not-found/');
+  }
+</script>

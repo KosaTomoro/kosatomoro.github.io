@@ -1,27 +1,47 @@
 ---
 import Icon from './Icon.astro';
 import { site } from '../config';
-const current = Astro.url.pathname;
-const navigation = [{ href: '/', label: 'About' }, { href: '/blog/', label: 'Blog' }, { href: '/archive/', label: 'Archive' }];
+import { copy, localPath, withoutLocale, type Locale } from '../i18n';
+interface Props { locale: Locale; alternate: string | null }
+const { locale, alternate } = Astro.props;
+const t = copy(locale);
+const current = withoutLocale(Astro.url.pathname);
+const navigation = [{ href: '/', label: t.about }, { href: '/blog/', label: t.blog }, { href: '/archive/', label: t.archive }, { href: '/list-100/', label: 'List100' }];
 const isActive = (href: string) => href === '/' ? current === '/' : current.startsWith(href);
 ---
 <header class="site-header shell">
-  <nav class="primary-nav" aria-label="主导航">
-    {navigation.map(({ href, label }) => <a href={href} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>)}
-    <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span><span class="sr-only">（新窗口）</span></a>
+  <a class="mobile-brand" href={localPath('/', locale)}>{site.name}</a>
+  <nav class="primary-nav" aria-label={t.nav}>
+    {navigation.map(({ href, label }) => <a href={localPath(href, locale)} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>)}
+    <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span><span class="sr-only">{t.newWindow}</span></a>
   </nav>
-  <button class="icon-button theme-toggle" type="button" aria-label="切换明暗主题" title="切换明暗主题" hidden>
-    <span class="theme-moon"><Icon name="moon" size={20} /></span><span class="theme-sun"><Icon name="sun" size={20} /></span>
-  </button>
+  <div class="header-tools">
+    {alternate ? <a class="language-switch" href={alternate} data-locale={locale === 'zh' ? 'en' : 'zh'} aria-label={locale === 'zh' ? 'Switch to English' : '切换到中文'} title={locale === 'zh' ? 'Switch to English' : '切换到中文'} hreflang={locale === 'zh' ? 'en' : 'zh-CN'}>
+      <span class:list={{ selected: locale === 'zh' }}>中</span><span class="separator" aria-hidden="true">/</span><span class:list={{ selected: locale === 'en' }}>EN</span>
+    </a> : <span class="language-switch unavailable" title={t.noTranslation} aria-label={t.noTranslation}><span class="selected">中</span><span class="separator" aria-hidden="true">/</span><span>EN</span></span>}
+    <span class="tool-divider" aria-hidden="true"></span>
+    <button class="icon-button theme-toggle" type="button" aria-label={t.switchLight} data-light={t.switchLight} data-dark={t.switchDark} hidden>
+      <span class="theme-moon"><Icon name="moon" size={19} /></span><span class="theme-sun"><Icon name="sun" size={19} /></span>
+    </button>
+  </div>
 </header>
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
-  const updateLabel = () => toggle?.setAttribute('aria-label', document.documentElement.dataset.theme === 'dark' ? '切换到浅色主题' : '切换到深色主题');
+  const updateLabel = () => {
+    if (!toggle) return;
+    const label = document.documentElement.dataset.theme === 'dark' ? toggle.dataset.light! : toggle.dataset.dark!;
+    toggle.setAttribute('aria-label', label); toggle.title = label;
+  };
   if (toggle) { toggle.hidden = false; updateLabel(); }
   toggle?.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem('theme', next); } catch {}
     updateLabel();
+  });
+  const language = document.querySelector<HTMLAnchorElement>('a.language-switch');
+  if (language && location.pathname.endsWith('/search/')) language.search = location.search;
+  language?.addEventListener('click', () => {
+    try { localStorage.setItem('language', language.dataset.locale!); } catch {}
   });
 </script>
