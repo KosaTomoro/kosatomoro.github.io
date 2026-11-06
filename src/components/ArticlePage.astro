@@ -2,10 +2,10 @@
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { site } from '../config';
-import { postUrl, dateLabel, tagUrl, type Post } from '../lib/posts';
-import { copy, categoryName, tagName, localPath } from '../i18n';
-interface Props { post: Post; newer?: Post; older?: Post }
-const { post, newer, older } = Astro.props;
+import { postUrl, dateLabel, type Post } from '../lib/posts';
+import { copy, categoryName, localPath } from '../i18n';
+interface Props { post: Post }
+const { post } = Astro.props;
 const locale = post.locale;
 const t = copy(locale);
 const { Content, headings } = await render(locale === 'en' && post.translation ? post.translation : post);
@@ -28,15 +28,10 @@ const alternate = post.translation ? postUrl(post, locale === 'zh' ? 'en' : 'zh'
             <div class="article-author"><span>{site.name}</span>{post.data.updated && <span>{t.updated} {dateLabel(post.data.updated)}</span>}</div>
           </header>
           <div class="prose"><Content /></div>
-          <footer class="article-end" data-pagefind-ignore><p>{t.thanks}</p><div class="post-tags">{post.data.tags.map(tag => <a href={tagUrl(tag,locale)}>#{tagName(tag,locale)}</a>)}</div></footer>
         </div>
       </div>
     </article>
-    {(newer || older) && <nav class="post-navigation" aria-label={t.neighbors}>
-      <div>{older && <a href={postUrl(older)}><span>← {t.previous}</span><strong>{older.data.title}</strong></a>}</div>
-      <div>{newer && <a href={postUrl(newer)}><span>{t.next} →</span><strong>{newer.data.title}</strong></a>}</div>
-    </nav>}
-    <div class="article-bottom"><a class="text-link" href={localPath('/blog/',locale)}>← {t.returnBlog}</a><a class="text-link" href={localPath('/rss.xml',locale)}>{t.subscribe} →</a></div>
+    <div class="article-bottom"><a class="text-link" href={localPath('/blog/',locale)}>← {t.returnBlog}</a></div>
   </div>
 </Base>
 <script>

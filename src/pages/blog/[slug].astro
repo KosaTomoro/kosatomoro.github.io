@@ -3,7 +3,7 @@ import Page from '../../components/ArticlePage.astro';
 import { getPosts } from '../../lib/posts';
 export async function getStaticPaths() {
   const posts = await getPosts();
-  return posts.map((post,index) => ({params:{slug:post.id},props:{post,newer:posts[index-1],older:posts[index+1]}}));
+  return posts.map(post => ({params:{slug:post.id},props:{post}}));
 }
 ---
 <Page {...Astro.props} />

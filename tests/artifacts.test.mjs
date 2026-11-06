@@ -41,7 +41,10 @@ test('reflection essay is published with its source link and closing line', () =
   assert.match(html, /href="https:\/\/www\.anthropic\.com\/claude-opus-5-5"/);
   assert.match(html, /内寻思考，放肆表达/);
   assert.match(html, /class="article-content has-toc"/);
+  assert.match(html, /<body class="article-page">/);
   assert.ok(html.indexOf('class="article-toc"') < html.indexOf('class="article-reading"'), 'Table of contents should precede the reading column');
+  assert.doesNotMatch(html, /class="article-end"|class="post-navigation"|感谢阅读。|订阅后续文章/);
+  assert.equal((html.match(/← 返回文章列表/g) ?? []).length, 1);
   assert.match(read('blog/index.html'), /href="\/blog\/what-i-learned-under-pressure\/"/);
   assert.match(read('rss.xml'), /https:\/\/kosatomoro\.github\.io\/blog\/what-i-learned-under-pressure\//);
 });
@@ -74,7 +77,8 @@ test('home is an about page with the requested minimal navigation', () => {
   const profile = html.match(/<aside class="about-profile"[\s\S]*?<\/aside>/)?.[0] ?? '';
   assert.doesNotMatch(profile, /github\.com/i);
   assert.match(profile, /<span class="experience-job"><strong>ByteDance<\/strong> <span>\(AI4SE-Agent\)<\/span><\/span>/);
-  assert.match(html, /<p class="personal-line"><span>内寻思考，放肆表达。<\/span><span class="signature">— Kosa<\/span><\/p>/);
+  assert.match(html, /<p class="intro-line">内寻思考，放肆表达。<\/p>/);
+  assert.doesNotMatch(html, /在技术与生活之间，保持好奇。|class="personal-line"|class="signature"|— Kosa/);
   assert.doesNotMatch(html, /class="about-links"/);
   assert.match(html, /theme : 'dark'/);
   assert.doesNotMatch(html, /\/projects\/|fku-raft-kv|fku-balancer|把想法写成代码/);
@@ -107,6 +111,8 @@ test('bilingual pages, alternates, RSS and search indexes are complete', () => {
   assert.match(english, /Build a public body of work/);
   assert.match(english, /Think inward. Express freely./);
   assert.match(english, /datetime="2026-11-06"/);
+  assert.doesNotMatch(english, /class="article-end"|class="post-navigation"|Thank you for reading.|Subscribe via RSS/);
+  assert.equal((english.match(/← Back to all essays/g) ?? []).length, 1);
   const codeBlocks = path => [...readFileSync(path,'utf8').matchAll(/\x60\x60\x60yaml\n([\s\S]*?)\x60\x60\x60/g)].map(match => match[1]);
   assert.deepEqual(codeBlocks('src/content/en/short-link-sharding.md'), codeBlocks('src/content/blog/short-link-sharding.md'));
   assert.equal((read('en/blog/short-link-sharding/index.html').match(/<pre\b/g) ?? []).length,2);
@@ -132,6 +138,16 @@ test('List100 publishes only the confirmed entry in both languages', () => {
     assert.match(html,/data-status="done"/);
     assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
     assert.doesNotMatch(html,/Chip Huyen|灵感来自|Inspired by/);
+    assert.doesNotMatch(html,/class="page-heading"|class="list-closing"|给未来留一点期待|THINGS TO LOOK FORWARD TO|剩下的空白|The blank lines/);
     assert.match(read(`${prefix}index.html`),new RegExp(`href="/${prefix}list-100/"`));
+  }
+});
+
+test('primary listing pages open directly on their controls or content', () => {
+  for (const prefix of ['', 'en/']) {
+    const blog = read(`${prefix}blog/index.html`);
+    const archive = read(`${prefix}archive/index.html`);
+    assert.doesNotMatch(blog, /class="page-heading"|文字与思考|WRITING &amp; REFLECTIONS|关于技术的探索|Notes on building things/);
+    assert.doesNotMatch(archive, /class="page-heading"|按时间整理|OVER THE YEARS|慢慢记录，留下走过的路|A small record of thoughts/);
   }
 });

@@ -10,7 +10,6 @@ const t = copy(locale);
 ---
 <Base title={category ? `${categoryName(category, locale)} · ${t.blog}` : t.blog}>
   <div class="shell page-content">
-    <header class="page-heading"><p class="eyebrow">{t.blogEyebrow}</p><h1>{locale === 'zh' ? '文章' : 'Writing'}<span class="accent">.</span></h1><p>{t.blogIntro}</p></header>
     <div class="list-toolbar">
       <nav class="category-tabs" aria-label={t.categories}>
         <a href={localPath('/blog/', locale)} aria-current={!category ? 'page' : undefined}>{t.all}</a>

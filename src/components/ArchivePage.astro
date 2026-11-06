@@ -9,7 +9,6 @@ const years = [...new Set(posts.map(({ data }) => data.date.slice(0, 4)))];
 ---
 <Base title={t.archive}>
   <div class="shell page-content">
-    <header class="page-heading"><p class="eyebrow">{t.archiveEyebrow}</p><h1>{t.archive}<span class="accent">.</span></h1><p>{t.archiveIntro} <span class="item-count">{articleCount(posts.length, locale)}</span></p></header>
     <div class="archive-list">{years.map(year => <section class="archive-year" aria-labelledby={`year-${year}`}>
       <div class="archive-year-label"><h2 id={`year-${year}`}>{year}</h2><span>{articleCount(posts.filter(({data}) => data.date.startsWith(year)).length, locale)}</span></div>
       <ul>{posts.filter(({ data }) => data.date.startsWith(year)).map(post => <li><time datetime={post.data.date}>{dateLabel(post.data.date).slice(5)}</time><a href={postUrl(post)}>{post.data.title}</a></li>)}</ul>

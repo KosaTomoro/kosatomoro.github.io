@@ -52,7 +52,7 @@ const year = new Intl.DateTimeFormat('en', { timeZone: site.timezone, year: 'num
       })();
     </script>
   </head>
-  <body>
+  <body class:list={{ 'article-page': article }}>
     <a href="#main" class="skip-link">{t.skip}</a>
     <Header locale={locale} alternate={alternate} />
     <main id="main" tabindex="-1"><slot /></main>

@@ -10,7 +10,6 @@ const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.do
 ---
 <Base title="List100" description={`${t.listIntro} ${t.listIntroTwo}`}>
   <div class="shell page-content list-page">
-    <header class="page-heading"><p class="eyebrow">{t.listEyebrow}</p><h1 class="list-heading">List100<span class="accent">.</span></h1><p>{t.listIntro}<br />{t.listIntroTwo}</p></header>
     <div class="progress-summary"><span><strong>{completed} {locale === 'zh' ? '项已完成' : 'completed'}</strong> / {t.possibilities}</span><span>{t.future}</span></div>
     <div class="list-progress" role="img" aria-label={locale === 'zh' ? `100 个位置中，${completed} 项已完成` : `${completed} completed out of 100 possible entries`}>
       {Array.from({length:100},(_,i) => <span class:list={{done:i<completed}}></span>)}
@@ -26,7 +25,6 @@ const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.do
       </div><span class="status-text">{statuses[item.status]}</span>
     </li>)}</ol>
     <p class="list-empty" role="status" hidden>{t.noListMatch}</p>
-    <p class="list-closing">{t.listClosing}</p>
   </div>
 </Base>
 <script>

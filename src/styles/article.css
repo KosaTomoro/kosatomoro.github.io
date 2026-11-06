@@ -38,18 +38,17 @@
 .copy-code { position: absolute; top: 9px; right: 11px; padding: 6px 10px; border: 1px solid var(--line); background: var(--bg); color: var(--secondary); border-radius: 4px; font: 11px/1.5 var(--sans); }
 .copy-code:hover { color: var(--accent); border-color: var(--accent); }
 [data-theme='dark'] .astro-code, [data-theme='dark'] .astro-code span { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
-.article-end { border-top: 1px solid var(--line); margin-top: 42px; padding-block: 25px; }
-.article-end p { color: var(--muted); font-size: 13px; }
-.post-navigation { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 708px; max-width: 100%; margin-left: auto; border-block: 1px solid var(--line); padding-block: 24px; }
-.post-navigation > div:last-child { text-align: right; }
-.post-navigation span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
-.post-navigation strong { font-size: 14px; font-weight: 500; }
-.article-bottom { display: flex; justify-content: space-between; gap: 20px; width: 708px; max-width: 100%; margin: 27px 0 0 auto; }
+.article-bottom { width: 708px; max-width: 100%; margin: 42px 0 0 auto; }
+@media (min-width: 621px) {
+  .article-page .site-header { position: sticky; top: 0; z-index: 10; background: var(--bg); }
+  .article-page .article-toc { top: 128px; max-height: calc(100dvh - 156px); }
+  .article-page .prose h2, .article-page .prose h3, .article-page .prose h4 { scroll-margin-top: 128px; }
+}
 @media (max-width: 900px) {
   .article-shell { width: calc(100% - 64px); }
   .article-content.has-toc { grid-template-columns: 170px minmax(0,1fr); gap: 32px; }
   .article-header h1 { font-size: 27px; }
-  .post-navigation, .article-bottom { width: calc(100% - 202px); }
+  .article-bottom { width: calc(100% - 202px); }
 }
 @media (max-width: 620px) {
   .article-shell { width: calc(100% - 40px); }
@@ -61,6 +60,6 @@
   .prose h2 { font-size: 22px; }
   .prose h3 { font-size: 19px; }
   .prose pre { padding-inline: 17px; font-size: 12px; }
-  .post-navigation, .article-bottom { width: 100%; }
+  .article-bottom { width: 100%; }
   .article-bottom .text-link { font-size: 12px; }
 }

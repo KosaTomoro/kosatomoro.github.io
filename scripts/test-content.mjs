@@ -46,8 +46,9 @@ try {
   assert.equal(existsSync(join(work, 'dist/blog/draft-never-publish')), false);
   assert.equal(existsSync(join(work, 'dist/tags/draft-only-tag')), false);
   for (const path of ['index.html', 'blog/index.html', 'archive/index.html', 'tags/index.html', 'rss.xml', 'sitemap-0.xml']) assert.doesNotMatch(read(path), /draft-never-publish|draft-only-tag/);
-  assert.match(read('blog/fixture-tech-11/index.html'), /fixture-life/);
-  assert.match(read('blog/fixture-tech-11/index.html'), /fixture-tech-10/);
+  const article = read('blog/fixture-tech-11/index.html');
+  assert.doesNotMatch(article, /fixture-life|fixture-tech-10|class="post-navigation"/);
+  assert.equal((article.match(/← 返回文章列表/g) ?? []).length, 1);
   assert.equal(rowCount(read('en/blog/index.html')), 2);
   assert.equal(rowCount(read('en/blog/category/tech/index.html')), 1);
   assert.equal(rowCount(read('en/blog/category/life/index.html')), 1);
@@ -60,13 +61,15 @@ try {
   }
   assert.doesNotMatch(read('blog/fixture-tech-11/index.html'), /hreflang="en"/);
   assert.match(read('blog/fixture-tech-11/index.html'), /暂时没有英文版本/);
-  assert.match(read('en/blog/fixture-life/index.html'), /fixture-baseline/);
+  const englishArticle = read('en/blog/fixture-life/index.html');
+  assert.doesNotMatch(englishArticle, /fixture-baseline|class="post-navigation"/);
+  assert.equal((englishArticle.match(/← Back to all essays/g) ?? []).length, 1);
   const index = spawnSync(process.execPath, [join(root,'node_modules/pagefind/lib/runner/bin.cjs'),'--site','dist'], {cwd:work,encoding:'utf8'});
   assert.equal(index.status,0,index.stdout+index.stderr);
   const search = JSON.parse(read('pagefind/pagefind-entry.json'));
   assert.equal(search.languages['zh-cn'].page_count,13);
   assert.equal(search.languages.en.page_count,2);
-  console.log('Content integration passed: 13 Chinese and 2 English posts; sorting, neighbors, translation fallback, orphan/draft exclusion, and separate search indexes.');
+  console.log('Content integration passed: 13 Chinese and 2 English posts; sorting, article return links, translation fallback, orphan/draft exclusion, and separate search indexes.');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }

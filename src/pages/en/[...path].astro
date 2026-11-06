@@ -9,7 +9,7 @@ import List100Page from '../../components/List100Page.astro';
 import NotFoundPage from '../../components/NotFoundPage.astro';
 import { getPosts, categories, type Post } from '../../lib/posts';
 type Kind = 'about' | 'blog' | 'archive' | 'article' | 'tags' | 'search' | 'list' | '404';
-interface Props { kind: Kind; posts?: Post[]; category?: string; tag?: string; post?: Post; newer?: Post; older?: Post }
+interface Props { kind: Kind; posts?: Post[]; category?: string; tag?: string; post?: Post }
 export async function getStaticPaths() {
   const posts = await getPosts('en');
   const paths: {params:{path:string|undefined};props:Props}[] = [
@@ -23,15 +23,15 @@ export async function getStaticPaths() {
   ];
   for(const category of categories) paths.push({params:{path:`blog/category/${category.slug}`},props:{kind:'blog',category:category.name,posts:posts.filter(({data})=>data.category===category.name)}});
   for(const tag of new Set(posts.flatMap(({data})=>data.tags))) paths.push({params:{path:`tags/${tag}`},props:{kind:'tags',tag}});
-  posts.forEach((post,index)=>paths.push({params:{path:`blog/${post.id}`},props:{kind:'article',post,newer:posts[index-1],older:posts[index+1]}}));
+  posts.forEach(post=>paths.push({params:{path:`blog/${post.id}`},props:{kind:'article',post}}));
   return paths;
 }
-const {kind,posts=[],category,tag,post,newer,older}=Astro.props;
+const {kind,posts=[],category,tag,post}=Astro.props;
 ---
 {kind==='about' && <AboutPage />}
 {kind==='blog' && <BlogIndex posts={posts} count={posts.length} category={category} />}
 {kind==='archive' && <ArchivePage />}
-{kind==='article' && post && <ArticlePage post={post} newer={newer} older={older} />}
+{kind==='article' && post && <ArticlePage post={post} />}
 {kind==='tags' && <TagsPage tag={tag} />}
 {kind==='search' && <SearchPage />}
 {kind==='list' && <List100Page />}
