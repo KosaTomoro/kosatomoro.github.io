@@ -10,20 +10,19 @@ const t = copy(locale);
     <article class="about-grid" aria-labelledby="about-title">
       <aside class="about-profile" aria-label={t.profile}>
         <img src={site.avatar} width="116" height="116" alt={t.avatar} />
+        <p class="profile-name">{site.name}</p>
         <div class="profile-details">
-          <p class="profile-role">{site.profileRole}</p>
           <p class="birth"><span>{t.born}</span><time datetime={site.birthDate}>{site.birth}</time></p>
-          <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub ↗<span class="sr-only">{t.newWindow}</span></a>
         </div>
         <section class="experience" aria-labelledby="experience-title">
           <h2 id="experience-title">{t.experience}</h2>
-          <ol>{[...site.experience].reverse().map(({ period, company, role }) => <li><strong>{company}</strong><span class="experience-role">{role}</span><span class="experience-period">{period}</span></li>)}</ol>
+          <ol>{site.experience.map(({ period, company, role }) => <li><span class="experience-period">{period}</span><span class="experience-job"><strong>{company}</strong> <span>({role})</span></span></li>)}</ol>
         </section>
       </aside>
       <div class="about-content">
         <header class="about-heading"><p class="eyebrow">{t.aboutEyebrow}</p><h1 id="about-title">{site.name}<span class="accent">.</span></h1><p class="intro-line">{t.introLine}</p></header>
         <div class="about-body"><p>{t.hello}</p><p>{t.introOne}</p><p>{t.introTwo}</p></div>
-        <p class="personal-line">{t.personalLine}</p><p class="signature">— Kosa</p>
+        <p class="personal-line"><span>{t.personalLine}</span><span class="signature">— Kosa</span></p>
         <nav class="about-links" aria-label={t.explore}><a href={localPath('/blog/', locale)}>{t.readWriting} →</a><a href={localPath('/list-100/', locale)}>{t.myList} →</a></nav>
       </div>
     </article>

@@ -70,6 +70,11 @@ test('home is an about page with the requested minimal navigation', () => {
   assert.match(html, /2024\.10 — 2025\.2/);
   assert.match(html, /2025\.6 — 2026\.12/);
   assert.equal((html.match(/AI4SE-Agent/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /profile-role|AI4SE · Agent/);
+  const profile = html.match(/<aside class="about-profile"[\s\S]*?<\/aside>/)?.[0] ?? '';
+  assert.doesNotMatch(profile, /github\.com/i);
+  assert.match(profile, /<span class="experience-job"><strong>ByteDance<\/strong> <span>\(AI4SE-Agent\)<\/span><\/span>/);
+  assert.match(html, /<p class="personal-line"><span>内寻思考，放肆表达。<\/span><span class="signature">— Kosa<\/span><\/p>/);
   assert.match(html, /theme : 'dark'/);
   assert.doesNotMatch(html, /\/projects\/|fku-raft-kv|fku-balancer|把想法写成代码/);
   assert.ok(!existsSync(join(dist, 'projects/index.html')));
@@ -125,6 +130,7 @@ test('List100 publishes only the confirmed entry in both languages', () => {
     assert.equal((html.match(/class="life-item"/g) ?? []).length,1);
     assert.match(html,/data-status="done"/);
     assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
+    assert.doesNotMatch(html,/Chip Huyen|灵感来自|Inspired by/);
     assert.match(read(`${prefix}index.html`),new RegExp(`href="/${prefix}list-100/"`));
   }
 });
