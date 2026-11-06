@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../config';
-import { copy, getLocale, localPath } from '../i18n';
+import { copy, getLocale } from '../i18n';
 const locale = getLocale(Astro.url.pathname);
 const t = copy(locale);
 ---
@@ -23,7 +23,6 @@ const t = copy(locale);
         <header class="about-heading"><p class="eyebrow">{t.aboutEyebrow}</p><h1 id="about-title">{site.name}<span class="accent">.</span></h1><p class="intro-line">{t.introLine}</p></header>
         <div class="about-body"><p>{t.hello}</p><p>{t.introOne}</p><p>{t.introTwo}</p></div>
         <p class="personal-line"><span>{t.personalLine}</span><span class="signature">— Kosa</span></p>
-        <nav class="about-links" aria-label={t.explore}><a href={localPath('/blog/', locale)}>{t.readWriting} →</a><a href={localPath('/list-100/', locale)}>{t.myList} →</a></nav>
       </div>
     </article>
   </div>

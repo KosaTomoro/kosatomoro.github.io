@@ -75,6 +75,7 @@ test('home is an about page with the requested minimal navigation', () => {
   assert.doesNotMatch(profile, /github\.com/i);
   assert.match(profile, /<span class="experience-job"><strong>ByteDance<\/strong> <span>\(AI4SE-Agent\)<\/span><\/span>/);
   assert.match(html, /<p class="personal-line"><span>内寻思考，放肆表达。<\/span><span class="signature">— Kosa<\/span><\/p>/);
+  assert.doesNotMatch(html, /class="about-links"/);
   assert.match(html, /theme : 'dark'/);
   assert.doesNotMatch(html, /\/projects\/|fku-raft-kv|fku-balancer|把想法写成代码/);
   assert.ok(!existsSync(join(dist, 'projects/index.html')));
