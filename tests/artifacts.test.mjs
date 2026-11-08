@@ -131,11 +131,15 @@ test('bilingual pages, alternates, RSS and search indexes are complete', () => {
   }
 });
 
-test('List100 publishes only the confirmed entry in both languages', () => {
+test('List100 publishes all confirmed entries in both languages', () => {
   for(const prefix of ['', 'en/']) {
     const html = read(`${prefix}list-100/index.html`);
-    assert.equal((html.match(/class="life-item"/g) ?? []).length,1);
+    assert.equal((html.match(/class="life-item"/g) ?? []).length,9);
     assert.match(html,/data-status="done"/);
+    assert.equal((html.match(/data-status="todo"/g) ?? []).length,8);
+    assert.match(html, prefix ? /Release an app of my own/ : /发布一款自己的 App/);
+    assert.match(html, prefix ? /Travel to Spain/ : /去西班牙旅行/);
+    assert.match(html, prefix ? /fosters so much creativity/ : /拥有如此丰富的创造力/);
     assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
     assert.doesNotMatch(html,/Chip Huyen|灵感来自|Inspired by/);
     assert.doesNotMatch(html,/class="page-heading"|class="list-closing"|给未来留一点期待|THINGS TO LOOK FORWARD TO|剩下的空白|The blank lines/);
