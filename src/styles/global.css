@@ -102,16 +102,13 @@ main { min-height: 660px; padding: 66px 0 76px; }
 .demo-note { display: flex; gap: 12px; color: var(--muted); font-size: 12px; line-height: 1.8; padding: 12px 15px; border: 1px dashed var(--line); border-radius: 6px; margin-bottom: 15px; }
 .demo-note > span { color: var(--accent); flex-shrink: 0; }
 .life-list { list-style: none; margin: 0; padding: 0; }
-.life-item { display: grid; grid-template-columns: 29px 19px minmax(0, 1fr) auto; gap: 13px; align-items: start; padding: 20px 0; border-bottom: 1px solid var(--line); }
-.life-number { font: 11px/2 var(--mono); color: var(--muted); padding-top: 2px; }
-.status-icon { height: 16px; width: 16px; border: 1px solid var(--muted); border-radius: 50%; display: grid; place-items: center; font-size: 10px; margin-top: 4px; }
-.life-item[data-status='done'] .status-icon { background: var(--soft); color: var(--accent); border-color: var(--accent); }
-.life-item[data-status='doing'] .status-icon { border-color: var(--accent); }
-.life-item[data-status='doing'] .status-icon::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; }
-.life-item h2 { font-weight: 450; font-size: 16px; line-height: 1.7; }
+.life-item { display: grid; grid-template-columns: 29px 18px minmax(0, 1fr); gap: 11px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.life-number { font: 11px/1.55 var(--mono); color: var(--muted); }
+.status-mark { color: var(--muted); font: italic 17px/1.2 var(--serif); text-align: center; }
+.life-item[data-status='done'] .status-mark { color: var(--accent); }
+.life-item[data-status='doing'] .status-mark { color: var(--secondary); }
+.life-item h2 { font-weight: 450; font-size: 16px; line-height: 1.55; }
 .life-item p { font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 4px; }
-.status-text { font-size: 11px; color: var(--muted); padding-top: 4px; white-space: nowrap; }
-.life-item[data-status='done'] .status-text { color: var(--accent); }
 .empty { padding-block: 36px; color: var(--muted); font-size: 14px; }
 .site-footer { border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; padding: 23px 0 34px; gap: 24px; font-size: 11px; color: var(--muted); }
 .footer-identity { display: flex; gap: 14px; }
@@ -172,9 +169,8 @@ main { min-height: 660px; padding: 66px 0 76px; }
   .archive-year li a { font-size: 14px; }
   .list-progress { grid-template-columns: repeat(50, 1fr); gap: 3px; }
   .list-progress span { height: 11px; }
-  .life-item { grid-template-columns: 24px 16px minmax(0, 1fr); gap: 10px; padding-block: 18px; }
+  .life-item { grid-template-columns: 24px 16px minmax(0, 1fr); gap: 9px; padding-block: 11px; }
   .life-item h2 { font-size: 15px; }
-  .status-text { grid-column: 3; padding-top: 0; }
   .site-footer { align-items: start; gap: 12px; }
   .footer-links { gap: 15px; }
   .footer-identity { max-width: 190px; }

@@ -137,10 +137,14 @@ test('List100 publishes all confirmed entries in both languages', () => {
     assert.equal((html.match(/class="life-item"/g) ?? []).length,9);
     assert.match(html,/data-status="done"/);
     assert.equal((html.match(/data-status="todo"/g) ?? []).length,8);
+    assert.equal((html.match(/class="status-mark"/g) ?? []).length,9);
+    assert.match(html,/class="status-mark" aria-hidden="true">✓/);
+    assert.match(html,/class="status-mark" aria-hidden="true">×/);
     assert.match(html, prefix ? /Release an app of my own/ : /发布一款自己的 App/);
     assert.match(html, prefix ? /Travel to Spain/ : /去西班牙旅行/);
     assert.match(html, prefix ? /fosters so much creativity/ : /拥有如此丰富的创造力/);
     assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
+    assert.doesNotMatch(html,/life-toolbar|data-life-filter|class="status-text"|从这里开始，留下思考与生活的记录|A place to leave a record of thoughts and everyday life/);
     assert.doesNotMatch(html,/Chip Huyen|灵感来自|Inspired by/);
     assert.doesNotMatch(html,/class="page-heading"|class="list-closing"|给未来留一点期待|THINGS TO LOOK FORWARD TO|剩下的空白|The blank lines/);
     assert.match(read(`${prefix}index.html`),new RegExp(`href="/${prefix}list-100/"`));

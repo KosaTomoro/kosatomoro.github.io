@@ -13,10 +13,6 @@ export const lifeList: LifeItem[] = [
   {
     id: 1, status: 'done',
     title: { zh: '拥有自己的个人博客', en: 'Build a personal blog of my own' },
-    description: {
-      zh: '从这里开始，留下思考与生活的记录。',
-      en: 'A place to leave a record of thoughts and everyday life.',
-    },
   },
   {
     id: 2, status: 'todo',
