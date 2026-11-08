@@ -5,7 +5,7 @@ This repository is Kosa Tomoro's bilingual public blog at `https://kosatomoro.gi
 ## Working agreement
 
 - Use Node.js 24 from `.nvmrc` and npm. Keep `package-lock.json` committed.
-- Work in this repository only. Never modify or delete `KosaTomoro/zhihuijie1.github.io`; it is only the source of the migrated short-link article.
+- Work in this repository only. Never modify or delete `KosaTomoro/zhihuijie1.github.io`; it is outside the scope of this site.
 - Keep the site static. Add client JavaScript only for necessary interactions. Do not add a server, database, analytics, comments, authentication, or CMS unless explicitly requested.
 - Treat content under `src/content/` as potentially public. `draft: true` excludes content from builds but does not make a committed file private.
 - Do not invent biography, employment, goals, achievements, projects, testimonials, metrics, or translations not grounded in user-provided content.
@@ -24,7 +24,7 @@ This repository is Kosa Tomoro's bilingual public blog at `https://kosatomoro.gi
 - Keep dates as calendar strings rendered in `Asia/Shanghai`; do not convert them to JavaScript timestamps.
 - A draft source, draft translation, or orphan translation must stay out of routes, lists, search, RSS, and sitemap. Articles lacking a translation must not expose a misleading language-switch link.
 - Put post images in `public/images/posts/<slug>/`, prefer compressed WebP/JPEG/PNG, and use helpful locale-appropriate alt text with root-relative URLs.
-- Do not restore Jekyll/Liquid syntax. The migrated short-link article must retain date 2025-03-16 and identical complete YAML blocks in both locales.
+- Do not restore Jekyll/Liquid syntax from retired content.
 
 ## List100
 

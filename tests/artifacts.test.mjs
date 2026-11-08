@@ -22,22 +22,10 @@ test('all internal navigation and local assets resolve to built files', () => {
   }
 });
 
-test('migration preserves the publication date and two complete highlighted code blocks', () => {
-  const html = read('blog/short-link-sharding/index.html');
-  assert.match(html, /短链接分库分表技术方案/);
-  assert.match(html, /datetime="2025-03-16"/);
-  assert.match(html, /2025\.03\.16/);
-  assert.equal((html.match(/<pre\b/g) ?? []).length, 2);
-  assert.match(html, /application\.yaml/);
-  assert.match(html, /shardingsphere-config\.yaml/);
-  assert.doesNotMatch(html, /{%|endtab|config-group/);
-  for (const match of html.matchAll(/href="#([^"]+)"/g)) assert.ok(html.includes(`id="${match[1]}"`), `Missing anchor ${match[1]}`);
-});
-
 test('reflection essay is published with its source link and closing line', () => {
   const html = read('blog/what-i-learned-under-pressure/index.html');
   assert.match(html, /工作这段时间，我在高压里想明白的几件事/);
-  assert.match(html, /datetime="2026-11-06"/);
+  assert.match(html, /datetime="2026-09-10"/);
   assert.match(html, /href="https:\/\/www\.anthropic\.com\/claude-opus-5-5"/);
   assert.match(html, /内寻思考，放肆表达/);
   assert.match(html, /class="article-content has-toc"/);
@@ -58,9 +46,9 @@ test('site metadata and feeds use the production origin', () => {
     assert.match(html, /name="description"/);
     assert.doesNotMatch(html, /zhihuijie1\.github\.io|localhost:|127\.0\.0\.1:/);
   }
-  assert.match(read('rss.xml'), /https:\/\/kosatomoro\.github\.io\/blog\/short-link-sharding\//);
-  assert.match(read('rss.xml'), /Sat, 15 Mar 2025 16:00:00 GMT/);
-  assert.match(read('sitemap-0.xml'), /https:\/\/kosatomoro\.github\.io\/blog\/short-link-sharding\//);
+  assert.doesNotMatch(read('rss.xml'), /short-link-sharding|短链接分库分表技术方案/);
+  assert.match(read('rss.xml'), /Wed, 09 Sep 2026 16:00:00 GMT/);
+  assert.doesNotMatch(read('sitemap-0.xml'), /short-link-sharding/);
   assert.match(read('robots.txt'), /https:\/\/kosatomoro\.github\.io\/sitemap-index.xml/);
 });
 
@@ -98,7 +86,7 @@ test('empty categories have a helpful state and search has an index', () => {
 });
 
 test('bilingual pages, alternates, RSS and search indexes are complete', () => {
-  for (const slug of ['short-link-sharding', 'what-i-learned-under-pressure']) {
+  for (const slug of ['what-i-learned-under-pressure']) {
     const zh = read(`blog/${slug}/index.html`);
     const en = read(`en/blog/${slug}/index.html`);
     assert.match(zh, new RegExp(`hreflang="en" href="https://kosatomoro.github.io/en/blog/${slug}/"`));
@@ -110,15 +98,18 @@ test('bilingual pages, alternates, RSS and search indexes are complete', () => {
   const english = read('en/blog/what-i-learned-under-pressure/index.html');
   assert.match(english, /Build a public body of work/);
   assert.match(english, /Think inward. Express freely./);
-  assert.match(english, /datetime="2026-11-06"/);
+  assert.match(english, /datetime="2026-09-10"/);
   assert.doesNotMatch(english, /class="article-end"|class="post-navigation"|Thank you for reading.|Subscribe via RSS/);
   assert.equal((english.match(/← Back to all essays/g) ?? []).length, 1);
-  const codeBlocks = path => [...readFileSync(path,'utf8').matchAll(/\x60\x60\x60yaml\n([\s\S]*?)\x60\x60\x60/g)].map(match => match[1]);
-  assert.deepEqual(codeBlocks('src/content/en/short-link-sharding.md'), codeBlocks('src/content/blog/short-link-sharding.md'));
-  assert.equal((read('en/blog/short-link-sharding/index.html').match(/<pre\b/g) ?? []).length,2);
+  for (const prefix of ['', 'en/']) {
+    assert.ok(!existsSync(join(dist, `${prefix}blog/short-link-sharding/index.html`)));
+    for (const path of [`${prefix}blog/index.html`, `${prefix}archive/index.html`, `${prefix}tags/index.html`, `${prefix}rss.xml`]) {
+      assert.doesNotMatch(read(path), /short-link-sharding|短链接分库分表技术方案|Sharding a URL Shortener/);
+    }
+  }
   const index = JSON.parse(read('pagefind/pagefind-entry.json'));
-  assert.equal(index.languages['zh-cn'].page_count, 2);
-  assert.equal(index.languages.en.page_count, 2);
+  assert.equal(index.languages['zh-cn'].page_count, 1);
+  assert.equal(index.languages.en.page_count, 1);
   assert.match(read('sitemap-0.xml'), /hreflang="en"/);
   assert.match(read('sitemap-0.xml'), /hreflang="zh-CN"/);
   for (const file of pages) {
