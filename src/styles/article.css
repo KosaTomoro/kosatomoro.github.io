@@ -8,6 +8,7 @@
 .article-toc li { font-size: 12px; line-height: 1.9; color: var(--muted); }
 .article-toc li a { display: block; border-left: 1px solid var(--line); padding: 6px 0 6px 14px; }
 .article-toc li a:hover { border-left-color: var(--accent); color: var(--accent); }
+.article-toc li a[aria-current='location'] { border-left-color: var(--accent); color: var(--accent); background: var(--soft); font-weight: 600; }
 .article-toc .toc-nested a { padding-left: 25px; }
 .article-header { margin-bottom: 36px; }
 .article-header h1 { font-size: 30px; font-weight: 550; letter-spacing: -.5px; line-height: 1.5; margin: 16px 0; overflow-wrap: anywhere; }

@@ -46,6 +46,10 @@ export const lifeList: LifeItem[] = [
     id: 9, status: 'todo',
     title: { zh: '去美国看看，调研美国为什么拥有如此丰富的创造力', en: 'Visit the United States and explore why it fosters so much creativity' },
   },
+  {
+    id: 10, status: 'todo',
+    title: { zh: '走完西班牙朝圣之路', en: 'Walk the Camino de Santiago in Spain' },
+  },
 ];
 if (lifeList.length > 100 || new Set(lifeList.map(item => item.id)).size !== lifeList.length ||
   lifeList.some(item => !Number.isInteger(item.id) || item.id < 1 || item.id > 100)) {

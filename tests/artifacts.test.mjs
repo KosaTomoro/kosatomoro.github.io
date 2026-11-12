@@ -37,6 +37,21 @@ test('reflection essay is published with its source link and closing line', () =
   assert.match(read('rss.xml'), /https:\/\/kosatomoro\.github\.io\/blog\/what-i-learned-under-pressure\//);
 });
 
+test('primary navigation keeps the same order across pages and languages', () => {
+  const ideasEnabled = /class="primary-nav"[^>]*>[^]*?href="\/ideas\/"/.test(
+    read('index.html').match(/<nav class="primary-nav"[^>]*>[^]*?<\/nav>/)?.[0] ?? '',
+  );
+  for (const file of pages) {
+    const html = readFileSync(file, 'utf8');
+    const nav = html.match(/<nav class="primary-nav"[^>]*>([^]*?)<\/nav>/)?.[1];
+    assert.ok(nav, `${file}: missing primary navigation`);
+    const prefix = file.startsWith(join(dist, 'en') + '/') ? '/en' : '';
+    const hrefs = [...nav.matchAll(/href="([^"]+)"/g)].map(([, href]) => href);
+    const paths = ['/', ...(ideasEnabled ? ['/ideas/'] : []), '/blog/', '/archive/', '/list-100/'];
+    assert.deepEqual(hrefs.slice(0, -1), paths.map(path => prefix + path), file);
+  }
+});
+
 test('site metadata and feeds use the production origin', () => {
   for (const file of pages) {
     const html = readFileSync(file, 'utf8');
@@ -125,14 +140,15 @@ test('bilingual pages, alternates, RSS and search indexes are complete', () => {
 test('List100 publishes all confirmed entries in both languages', () => {
   for(const prefix of ['', 'en/']) {
     const html = read(`${prefix}list-100/index.html`);
-    assert.equal((html.match(/class="life-item"/g) ?? []).length,9);
+    assert.equal((html.match(/class="life-item"/g) ?? []).length,10);
     assert.match(html,/data-status="done"/);
-    assert.equal((html.match(/data-status="todo"/g) ?? []).length,8);
-    assert.equal((html.match(/class="status-mark"/g) ?? []).length,9);
+    assert.equal((html.match(/data-status="todo"/g) ?? []).length,9);
+    assert.equal((html.match(/class="status-mark"/g) ?? []).length,10);
     assert.match(html,/class="status-mark" aria-hidden="true">✓/);
     assert.match(html,/class="status-mark" aria-hidden="true">×/);
     assert.match(html, prefix ? /Release an app of my own/ : /发布一款自己的 App/);
     assert.match(html, prefix ? /Travel to Spain/ : /去西班牙旅行/);
+    assert.match(html, prefix ? /Walk the Camino de Santiago in Spain/ : /走完西班牙朝圣之路/);
     assert.match(html, prefix ? /fosters so much creativity/ : /拥有如此丰富的创造力/);
     assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
     assert.doesNotMatch(html,/life-toolbar|data-life-filter|class="status-text"|从这里开始，留下思考与生活的记录|A place to leave a record of thoughts and everyday life/);

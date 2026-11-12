@@ -42,9 +42,54 @@ const alternate = post.translation ? postUrl(post, locale === 'zh' ? 'en' : 'zh'
   const syncToc = () => { if (toc) toc.open = !narrow.matches; };
   syncToc();
   narrow.addEventListener('change', syncToc);
-  toc?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
-    if (narrow.matches && toc) toc.open = false;
-  }));
+  if (toc) {
+    const sections = Array.from(toc.querySelectorAll<HTMLAnchorElement>('a')).flatMap(link => {
+      const heading = document.getElementById(link.getAttribute('href')!.slice(1));
+      return heading ? [{ link, heading }] : [];
+    }).reverse();
+    let current: HTMLAnchorElement | undefined;
+    let frame: number | undefined;
+
+    function revealCurrentSection() {
+      if (!toc?.open || !current) return;
+      const item = current.getBoundingClientRect();
+      const panel = toc.getBoundingClientRect();
+      if (item.top < panel.top) toc.scrollTop += item.top - panel.top;
+      else if (item.bottom > panel.bottom) toc.scrollTop += item.bottom - panel.bottom;
+    }
+
+    function updateCurrentSection() {
+      frame = undefined;
+      const last = sections[0];
+      if (!last) return;
+      const topPadding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      const offset = topPadding + parseFloat(getComputedStyle(last.heading).scrollMarginTop) + 16;
+      const scroller = document.scrollingElement;
+      const atEnd = scroller && scroller.scrollTop > 0 &&
+        scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
+      const next = atEnd
+        ? last.link
+        : sections.find(({ heading }) => heading.getBoundingClientRect().top <= offset)?.link;
+      if (next === current) return;
+      current?.removeAttribute('aria-current');
+      next?.setAttribute('aria-current', 'location');
+      current = next;
+      revealCurrentSection();
+    }
+
+    const scheduleUpdate = () => { frame ??= requestAnimationFrame(updateCurrentSection); };
+    for (const { link } of sections) {
+      link.addEventListener('click', () => {
+        if (narrow.matches) toc.open = false;
+        scheduleUpdate();
+      });
+    }
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('pageshow', scheduleUpdate);
+    toc.addEventListener('toggle', revealCurrentSection);
+    scheduleUpdate();
+  }
   document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre => {
     const container = document.createElement('div');
     container.className = 'code-block';
