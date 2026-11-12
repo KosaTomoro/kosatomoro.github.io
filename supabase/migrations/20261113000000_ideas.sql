@@ -9,6 +9,8 @@ create table ideas_private.owner (
   user_id uuid not null references auth.users (id) on delete cascade
 );
 
+alter table ideas_private.owner enable row level security;
+
 create function public.is_ideas_owner()
 returns boolean
 language sql
