@@ -13,7 +13,7 @@
 .article-header h1 { font-size: 30px; font-weight: 550; letter-spacing: -.5px; line-height: 1.5; margin: 16px 0; overflow-wrap: anywhere; }
 .article-description { font-size: 14px; color: var(--secondary); line-height: 1.9; }
 .article-author { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 11px; margin-top: 18px; }
-.prose { font: 18px/1.95 var(--sans); color: var(--secondary); overflow-wrap: break-word; }
+.prose { font: 1rem/1.8 var(--sans); color: var(--secondary); overflow-wrap: break-word; }
 .prose h2, .prose h3, .prose h4 { color: var(--text); font-weight: 550; scroll-margin-top: 30px; line-height: 1.6; }
 .prose h2 { font-size: 23px; margin: 40px 0 21px; }
 .prose h3 { font-size: 20px; margin: 29px 0 17px; }
@@ -56,7 +56,6 @@
   .article-toc { position: static; max-height: 55dvh; margin-bottom: 25px; background: var(--surface); padding: 14px 17px; border-radius: 6px; }
   .article-header h1 { font-size: 27px; }
   .article-header { margin-bottom: 28px; }
-  .prose { font-size: 17px; line-height: 1.95; }
   .prose h2 { font-size: 22px; }
   .prose h3 { font-size: 19px; }
   .prose pre { padding-inline: 17px; font-size: 12px; }
