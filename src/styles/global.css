@@ -131,7 +131,7 @@ main { min-height: 660px; padding: 66px 0 76px; }
 @media (max-width: 620px) {
   .shell { width: calc(100% - 40px); }
   .site-header { height: auto; min-height: 100px; position: relative; align-items: start; padding: 17px 0 0; flex-wrap: wrap; gap: 3px; }
-  .primary-nav { order: 2; width: 100%; justify-content: space-between; gap: 12px; }
+  .primary-nav { order: 2; width: 100%; justify-content: space-between; flex-wrap: wrap; column-gap: 8px; row-gap: 0; }
   .primary-nav a { font-size: 13px; height: 45px; }
   .header-tools { margin-left: auto; height: 30px; gap: 9px; }
   .icon-button { height: 36px; width: 32px; }

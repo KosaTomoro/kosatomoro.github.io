@@ -6,9 +6,11 @@ import ArticlePage from '../../components/ArticlePage.astro';
 import TagsPage from '../../components/TagsPage.astro';
 import SearchPage from '../../components/SearchPage.astro';
 import List100Page from '../../components/List100Page.astro';
+import IdeasPage from '../../components/IdeasPage.astro';
+import IdeasEditorPage from '../../components/IdeasEditorPage.astro';
 import NotFoundPage from '../../components/NotFoundPage.astro';
 import { getPosts, categories, type Post } from '../../lib/posts';
-type Kind = 'about' | 'blog' | 'archive' | 'article' | 'tags' | 'search' | 'list' | '404';
+type Kind = 'about' | 'blog' | 'archive' | 'article' | 'tags' | 'search' | 'list' | 'ideas' | 'ideas-admin' | '404';
 interface Props { kind: Kind; posts?: Post[]; category?: string; tag?: string; post?: Post }
 export async function getStaticPaths() {
   const posts = await getPosts('en');
@@ -19,6 +21,8 @@ export async function getStaticPaths() {
     {params:{path:'tags'},props:{kind:'tags'}},
     {params:{path:'search'},props:{kind:'search'}},
     {params:{path:'list-100'},props:{kind:'list'}},
+    {params:{path:'ideas'},props:{kind:'ideas'}},
+    {params:{path:'ideas/admin'},props:{kind:'ideas-admin'}},
     {params:{path:'not-found'},props:{kind:'404'}},
   ];
   for(const category of categories) paths.push({params:{path:`blog/category/${category.slug}`},props:{kind:'blog',category:category.name,posts:posts.filter(({data})=>data.category===category.name)}});
@@ -35,4 +39,6 @@ const {kind,posts=[],category,tag,post}=Astro.props;
 {kind==='tags' && <TagsPage tag={tag} />}
 {kind==='search' && <SearchPage />}
 {kind==='list' && <List100Page />}
+{kind==='ideas' && <IdeasPage />}
+{kind==='ideas-admin' && <IdeasEditorPage />}
 {kind==='404' && <NotFoundPage />}

@@ -19,6 +19,7 @@
   "dependencies": {
     "@astrojs/rss": "4.0.19",
     "@astrojs/sitemap": "3.7.4",
+    "@supabase/supabase-js": "2.119.0",
     "astro": "7.4.5",
     "pagefind": "1.6.0"
   },

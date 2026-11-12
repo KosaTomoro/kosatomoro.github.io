@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import { getLocale, ideasCopy, localPath } from '../i18n';
+import { ideasConfig } from '../lib/ideas-config';
+import '../styles/ideas.css';
+
+const locale = getLocale(Astro.url.pathname);
+const t = ideasCopy(locale);
+---
+<Base title={t.editor} noindex>
+  <section class="shell page-content ideas-page" data-ideas-editor
+    data-url={ideasConfig?.url} data-key={ideasConfig?.key}>
+    <div class="ideas-heading">
+      <h1>{t.editor}</h1>
+      <a class="text-link" href={localPath('/ideas/', locale)}>{t.timeline} →</a>
+    </div>
+    <div class="ideas-auth">
+      <p class="ideas-status" data-auth-status role="status">{ideasConfig ? t.loading : t.unavailable}</p>
+      <button class="ideas-button ideas-primary" type="button" data-login hidden>{t.login}</button>
+      <button class="ideas-button" type="button" data-logout hidden>{t.signOut}</button>
+    </div>
+    <div data-owner-panel hidden>
+      <div class="ideas-workspace">
+        <form class="ideas-compose">
+          <div class="ideas-heading">
+            <label for="ideas-body">{t.write}</label>
+            <button class="ideas-edit" type="button" data-new hidden>{t.newIdea}</button>
+          </div>
+          <textarea id="ideas-body" rows="4" maxlength="500" required placeholder={t.placeholder}></textarea>
+          <div class="ideas-actions">
+            <button class="ideas-button" type="submit" data-save>{t.save}</button>
+            <button class="ideas-button ideas-primary" type="submit" data-publish>{t.publish}</button>
+          </div>
+          <p class="ideas-status" data-feedback role="status"></p>
+        </form>
+        <section aria-labelledby="ideas-drafts">
+          <div class="ideas-heading"><h2 id="ideas-drafts">{t.drafts}</h2><span class="ideas-meta">{t.private}</span></div>
+          <p class="ideas-status" data-empty-drafts>{t.emptyDrafts}</p>
+          <ul class="ideas-list" data-drafts></ul>
+        </section>
+      </div>
+      <section class="ideas-recent" aria-labelledby="ideas-recent">
+        <div class="ideas-heading"><h2 id="ideas-recent">{t.published}</h2><span class="ideas-meta">{t.public}</span></div>
+        <p class="ideas-status" data-empty-feed>{t.empty}</p>
+        <ul class="ideas-list" data-feed></ul>
+      </section>
+    </div>
+    <noscript><p class="ideas-status">{t.noScript}</p></noscript>
+  </section>
+</Base>
+
+<script>
+  import { initializeIdeasEditor } from '../lib/ideas-editor';
+  const root = document.querySelector<HTMLElement>('[data-ideas-editor]');
+  if (root) initializeIdeasEditor(root);
+</script>

@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { getLocale, ideasCopy } from '../i18n';
+import { ideasConfig } from '../lib/ideas-config';
+import '../styles/ideas.css';
+
+const locale = getLocale(Astro.url.pathname);
+const t = ideasCopy(locale);
+---
+<Base title={t.title} description={t.description} noindex={!ideasConfig}>
+  <section class="shell page-content ideas-page" data-ideas-timeline
+    data-url={ideasConfig?.url} data-key={ideasConfig?.key}>
+    <h1>{t.title}</h1>
+    <p class="ideas-status" data-status role="status">{ideasConfig ? t.loading : t.unavailable}</p>
+    <ul class="ideas-list" data-feed></ul>
+    <button class="ideas-button ideas-more" type="button" data-more hidden>{t.more}</button>
+    <noscript><p class="ideas-status">{t.noScript}</p></noscript>
+  </section>
+</Base>
+
+<script>
+  import { getLocale, ideasCopy } from '../i18n';
+  import { connectIdeas, ideaRow, publishedIdeas, type Idea } from '../lib/ideas-client';
+
+  const root = document.querySelector<HTMLElement>('[data-ideas-timeline]')!;
+  const locale = getLocale(location.pathname);
+  const t = ideasCopy(locale);
+  const client = connectIdeas(root);
+  const feed = root.querySelector<HTMLUListElement>('[data-feed]')!;
+  const status = root.querySelector<HTMLElement>('[data-status]')!;
+  const more = root.querySelector<HTMLButtonElement>('[data-more]')!;
+  const pageSize = 30;
+  let last: Idea | undefined;
+
+  async function load() {
+    if (!client) return;
+    more.disabled = true;
+    status.textContent = t.loading;
+    try {
+      let query = publishedIdeas(client).limit(pageSize + 1);
+      if (last) {
+        query = query.or(
+          `published_at.lt.${last.published_at},and(published_at.eq.${last.published_at},id.lt.${last.id})`,
+        );
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      const page = data.slice(0, pageSize);
+      feed.append(...page.map(idea => ideaRow(idea, locale)));
+      last = page.at(-1) ?? last;
+      status.textContent = last ? '' : t.empty;
+      more.textContent = t.more;
+      more.hidden = data.length <= pageSize;
+    } catch {
+      status.textContent = t.loadError;
+      more.textContent = t.retry;
+      more.hidden = false;
+    } finally {
+      more.disabled = false;
+    }
+  }
+
+  more.addEventListener('click', load);
+  if (client) void load();
+</script>

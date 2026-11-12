@@ -6,7 +6,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [sitemap({
-    filter: (page) => !/\/(404|not-found|search)\/?$/.test(page),
+    filter: (page) => !/\/(404|not-found|search|ideas\/admin)\/?$/.test(page),
     i18n: { defaultLocale: 'zh', locales: { zh: 'zh-CN', en: 'en' } },
   })],
   markdown: {

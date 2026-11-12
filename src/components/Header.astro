@@ -1,12 +1,14 @@
 ---
 import Icon from './Icon.astro';
 import { site } from '../config';
-import { copy, localPath, withoutLocale, type Locale } from '../i18n';
+import { copy, ideasCopy, localPath, withoutLocale, type Locale } from '../i18n';
+import { ideasConfig } from '../lib/ideas-config';
 interface Props { locale: Locale; alternate: string | null }
 const { locale, alternate } = Astro.props;
 const t = copy(locale);
 const current = withoutLocale(Astro.url.pathname);
 const navigation = [{ href: '/', label: t.about }, { href: '/blog/', label: t.blog }, { href: '/archive/', label: t.archive }, { href: '/list-100/', label: 'List100' }];
+if (ideasConfig) navigation.push({ href: '/ideas/', label: ideasCopy(locale).title });
 const isActive = (href: string) => href === '/' ? current === '/' : current.startsWith(href);
 ---
 <header class="site-header shell">

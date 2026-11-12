@@ -110,6 +110,24 @@ List100 页面位于 `/list-100/` 和 `/en/list-100/`，数据集中保存在 `s
 
 首页采用两栏个人介绍，文章页在宽屏使用左侧固定目录、右侧正文，在移动端将目录折叠到正文上方。文章列表不分页，一次展示全部已发布内容。设计借鉴 Polebug 的简洁导航、留白和阅读氛围，但页面、样式和内容均独立实现。
 
+## 启用灵感
+
+公开时间线是 `/ideas/`（英文 `/en/ideas/`），作者编辑入口是 `/ideas/admin/`。中英文界面共用同一份灵感，按原文展示。发布后访客刷新页面即可看到。
+
+1. 创建 Supabase 项目，在 SQL Editor 执行 [灵感数据库迁移](supabase/migrations/20261113000000_ideas.sql)。
+2. 按 [Supabase 的 GitHub 登录文档](https://supabase.com/docs/guides/auth/social-sign-in/auth-github) 创建 OAuth App。GitHub 的回调使用 Supabase 提供的 URL，OAuth Client Secret 保存到 Supabase 的 GitHub provider 配置中。Supabase 的重定向允许列表加入 `https://kosatomoro.github.io/ideas/admin/` 和 `https://kosatomoro.github.io/en/ideas/admin/`。本地开发可单独加入实际使用的回环地址。
+3. 将 `.env.example` 复制为本地 `.env`，填写项目 URL 和 `sb_publishable_…` 密钥，启动本地站点，从作者页使用自己的 GitHub 账号登录。登录后暂时显示没有编辑权限，此时在 Supabase 的 Authentication → Users 核对自己的 GitHub 身份并复制 User UID。
+4. 在 SQL Editor 执行下方语句，用复制的 User UID 替换占位值。重新打开作者页即可编辑。绑定后可关闭新用户注册。
+
+```sql
+insert into ideas_private.owner (user_id)
+values ('替换为自己的 Supabase User UID');
+```
+
+5. 在 GitHub 仓库 Settings → Secrets and variables → Actions → Variables 添加 `PUBLIC_SUPABASE_URL` 和 `PUBLIC_SUPABASE_PUBLISHABLE_KEY`，再触发 **Check and deploy blog**。这两项可公开给浏览器，切勿填写 `sb_secret_…`、`service_role` 或 OAuth Client Secret。两项配置齐备时导航显示「灵感」。
+
+在作者页写一条测试灵感并暂存，用无痕窗口检查公开时间线，再发布并刷新访客页。权限回归脚本 [check-ideas-permissions.sql](scripts/check-ideas-permissions.sql) 可在已迁移的独立测试库中执行，测试写入会在事务结束时回滚。
+
 ## 发布到 GitHub Pages
 
 仓库 **Settings → Pages → Build and deployment → Source** 应选择 **GitHub Actions**。推送到 `main` 后，`Check and deploy blog` 工作流会检查、构建并部署；Pull Request 只检查，不发布。
