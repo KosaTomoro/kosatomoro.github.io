@@ -18,6 +18,7 @@ type IdeasDatabase = {
     Views: Record<never, never>;
     Functions: {
       is_ideas_owner: { Args: Record<never, never>; Returns: boolean };
+      delete_published_idea: { Args: { p_id: string }; Returns: undefined };
       write_idea: {
         Args: { p_id: string; p_body: string; p_publish: boolean; p_revision: number | null };
         Returns: Idea;

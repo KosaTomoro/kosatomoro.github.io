@@ -20,11 +20,16 @@ export function initializeIdeasEditor(root: HTMLElement) {
   const newIdea = root.querySelector<HTMLButtonElement>('[data-new]')!;
   const draftsList = root.querySelector<HTMLUListElement>('[data-drafts]')!;
   const feed = root.querySelector<HTMLUListElement>('[data-feed]')!;
+  const deleteStatus = root.querySelector<HTMLElement>('[data-delete-status]')!;
+  const deleteDialog = root.querySelector<HTMLDialogElement>('[data-delete-dialog]')!;
+  const recentHeading = root.querySelector<HTMLElement>('#ideas-recent')!;
   const emptyDrafts = root.querySelector<HTMLElement>('[data-empty-drafts]')!;
   const emptyFeed = root.querySelector<HTMLElement>('[data-empty-feed]')!;
   const recentLimit = 10;
   let drafts: Idea[] = [];
   let recent: Idea[] = [];
+  const deleting = new Set<string>();
+  let pendingDelete: { idea: Idea; button: HTMLButtonElement } | undefined;
   let editing: Idea | undefined;
   let newId: string | undefined;
   let saving = false;
@@ -60,9 +65,54 @@ export function initializeIdeasEditor(root: HTMLElement) {
       row.append(button);
       return row;
     }));
-    feed.replaceChildren(...recent.map(idea => ideaRow(idea, locale)));
+    feed.replaceChildren(...recent.map(idea => {
+      const row = ideaRow(idea, locale);
+      const button = document.createElement('button');
+      button.className = 'ideas-edit';
+      button.type = 'button';
+      button.textContent = t.delete;
+      button.disabled = deleting.has(idea.id);
+      button.addEventListener('click', () => {
+        pendingDelete = { idea, button };
+        deleteDialog.returnValue = 'cancel';
+        deleteDialog.showModal();
+      });
+      row.append(button);
+      return row;
+    }));
     syncControls();
   }
+
+  async function deleteIdea(idea: Idea, button: HTMLButtonElement) {
+    if (deleting.has(idea.id)) return;
+    deleting.add(idea.id);
+    button.disabled = true;
+    deleteStatus.textContent = t.loading;
+    try {
+      const { error } = await client.rpc('delete_published_idea', { p_id: idea.id });
+      if (error) throw error;
+      if (signedOut) return;
+      recent = recent.filter(item => item.id !== idea.id);
+      deleteStatus.textContent = t.deleted;
+    } catch {
+      if (!signedOut) deleteStatus.textContent = t.deleteError;
+    } finally {
+      deleting.delete(idea.id);
+      if (!signedOut) {
+        const restoreFocus = document.activeElement === button || document.activeElement === document.body;
+        render();
+        if (restoreFocus) recentHeading.focus();
+      }
+    }
+  }
+
+  deleteDialog.addEventListener('close', () => {
+    const pending = pendingDelete;
+    pendingDelete = undefined;
+    if (pending && deleteDialog.returnValue === 'delete' && !signedOut) {
+      void deleteIdea(pending.idea, pending.button);
+    }
+  });
 
   async function load() {
     try {
@@ -123,10 +173,12 @@ export function initializeIdeasEditor(root: HTMLElement) {
   client.auth.onAuthStateChange(event => {
     if (event !== 'SIGNED_OUT') return;
     signedOut = true;
+    deleteDialog.close('cancel');
     panel.hidden = true;
     input.value = '';
     drafts = [];
     recent = [];
+    deleteStatus.textContent = '';
     editing = undefined;
     newId = undefined;
     render();

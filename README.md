@@ -114,7 +114,7 @@ List100 页面位于 `/list-100/` 和 `/en/list-100/`，数据集中保存在 `s
 
 公开时间线是 `/ideas/`（英文 `/en/ideas/`），作者编辑入口是 `/ideas/admin/`。中英文界面共用同一份灵感，按原文展示。发布后访客刷新页面即可看到。
 
-1. 创建 Supabase 项目，在 SQL Editor 执行 [灵感数据库迁移](supabase/migrations/20261113000000_ideas.sql)。
+1. 创建 Supabase 项目，在 SQL Editor 依次执行 [灵感数据库迁移](supabase/migrations/20261113000000_ideas.sql) 和 [删除已发布灵感的迁移](supabase/migrations/20261113000100_delete_published_ideas.sql)。
 2. 按 [Supabase 的 GitHub 登录文档](https://supabase.com/docs/guides/auth/social-sign-in/auth-github) 创建 OAuth App。GitHub 的回调使用 Supabase 提供的 URL，OAuth Client Secret 保存到 Supabase 的 GitHub provider 配置中。Supabase 的重定向允许列表加入 `https://kosatomoro.github.io/ideas/admin/` 和 `https://kosatomoro.github.io/en/ideas/admin/`。本地开发可单独加入实际使用的回环地址。
 3. 将 `.env.example` 复制为本地 `.env`，填写项目 URL 和 `sb_publishable_…` 密钥，启动本地站点，从作者页使用自己的 GitHub 账号登录。登录后暂时显示没有编辑权限，此时在 Supabase 的 Authentication → Users 核对自己的 GitHub 身份并复制 User UID。
 4. 在 SQL Editor 执行下方语句，用复制的 User UID 替换占位值。重新打开作者页即可编辑。绑定后可关闭新用户注册。

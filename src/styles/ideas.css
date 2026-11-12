@@ -54,6 +54,16 @@
 .ideas-list p { white-space: pre-wrap; }
 .ideas-more { margin-top: 12px; }
 .ideas-recent { margin-top: 28px; }
+.ideas-delete-dialog {
+  width: min(380px, calc(100% - 32px));
+  padding: 20px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.ideas-delete-dialog .ideas-actions { margin-top: 16px; justify-content: flex-end; }
+.ideas-delete-dialog::backdrop { background: rgb(0 0 0 / .45); }
 @media (max-width: 620px) {
   .ideas-workspace { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }

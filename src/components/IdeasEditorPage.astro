@@ -40,9 +40,17 @@ const t = ideasCopy(locale);
         </section>
       </div>
       <section class="ideas-recent" aria-labelledby="ideas-recent">
-        <div class="ideas-heading"><h2 id="ideas-recent">{t.published}</h2><span class="ideas-meta">{t.public}</span></div>
+        <div class="ideas-heading"><h2 id="ideas-recent" tabindex="-1">{t.published}</h2><span class="ideas-meta">{t.public}</span></div>
+        <p class="ideas-status" data-delete-status role="status"></p>
         <p class="ideas-status" data-empty-feed>{t.empty}</p>
         <ul class="ideas-list" data-feed></ul>
+        <dialog class="ideas-delete-dialog" aria-labelledby="ideas-delete-question" data-delete-dialog>
+          <p id="ideas-delete-question">{t.confirmDelete}</p>
+          <form method="dialog" class="ideas-actions">
+            <button class="ideas-button" value="cancel" autofocus>{t.cancelDelete}</button>
+            <button class="ideas-button" value="delete">{t.confirmDeleteAction}</button>
+          </form>
+        </dialog>
       </section>
     </div>
     <noscript><p class="ideas-status">{t.noScript}</p></noscript>
