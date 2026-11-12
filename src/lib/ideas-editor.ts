@@ -1,5 +1,5 @@
 import { getLocale, ideasCopy } from '../i18n';
-import { connectIdeas, ideaColumns, ideaRow, publishedIdeas, type Idea } from './ideas-client';
+import { connectIdeas, ideaColumns, ideaRow, publishedIdeas, signInToIdeas, type Idea } from './ideas-client';
 
 export function initializeIdeasEditor(root: HTMLElement) {
   const connection = connectIdeas(root, true);
@@ -102,11 +102,7 @@ export function initializeIdeasEditor(root: HTMLElement) {
   login.addEventListener('click', async () => {
     login.disabled = true;
     try {
-      const { error } = await client.auth.signInWithOAuth({
-        provider: 'github',
-        options: { redirectTo: location.origin + location.pathname },
-      });
-      if (error) throw error;
+      await signInToIdeas(client, location.origin + location.pathname);
     } catch {
       login.disabled = false;
       authStatus.textContent = t.loginError;

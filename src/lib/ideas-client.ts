@@ -32,11 +32,17 @@ export function connectIdeas(root: HTMLElement, author = false) {
   return createClient<IdeasDatabase>(url, key, {
     auth: {
       flowType: 'pkce',
+      ...(author ? {} : { storageKey: 'ideas-public' }),
       persistSession: author,
       detectSessionInUrl: author,
       autoRefreshToken: author,
     },
   });
+}
+
+export async function signInToIdeas(client: NonNullable<ReturnType<typeof connectIdeas>>, redirectTo: string) {
+  const { error } = await client.auth.signInWithOAuth({ provider: 'github', options: { redirectTo } });
+  if (error) throw error;
 }
 
 export const ideaColumns = 'id,body,revision,updated_at,published_at';

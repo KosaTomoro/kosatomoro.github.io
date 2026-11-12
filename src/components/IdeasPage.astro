@@ -10,7 +10,11 @@ const t = ideasCopy(locale);
 <Base title={t.title} description={t.description} noindex={!ideasConfig}>
   <section class="shell page-content ideas-page" data-ideas-timeline
     data-url={ideasConfig?.url} data-key={ideasConfig?.key}>
-    <h1>{t.title}</h1>
+    <div class="ideas-heading ideas-timeline-heading">
+      <h1>{t.title}</h1>
+      {ideasConfig && <button class="ideas-button" type="button" data-login>{t.login}</button>}
+    </div>
+    <p class="ideas-status" data-login-status role="status"></p>
     <p class="ideas-status" data-status role="status">{ideasConfig ? t.loading : t.unavailable}</p>
     <ul class="ideas-list" data-feed></ul>
     <button class="ideas-button ideas-more" type="button" data-more hidden>{t.more}</button>
@@ -19,8 +23,8 @@ const t = ideasCopy(locale);
 </Base>
 
 <script>
-  import { getLocale, ideasCopy } from '../i18n';
-  import { connectIdeas, ideaRow, publishedIdeas, type Idea } from '../lib/ideas-client';
+  import { getLocale, ideasCopy, localPath } from '../i18n';
+  import { connectIdeas, ideaRow, publishedIdeas, signInToIdeas, type Idea } from '../lib/ideas-client';
 
   const root = document.querySelector<HTMLElement>('[data-ideas-timeline]')!;
   const locale = getLocale(location.pathname);
@@ -29,6 +33,8 @@ const t = ideasCopy(locale);
   const feed = root.querySelector<HTMLUListElement>('[data-feed]')!;
   const status = root.querySelector<HTMLElement>('[data-status]')!;
   const more = root.querySelector<HTMLButtonElement>('[data-more]')!;
+  const login = root.querySelector<HTMLButtonElement>('[data-login]');
+  const loginStatus = root.querySelector<HTMLElement>('[data-login-status]')!;
   const pageSize = 30;
   let last: Idea | undefined;
 
@@ -61,5 +67,20 @@ const t = ideasCopy(locale);
   }
 
   more.addEventListener('click', load);
+  login?.addEventListener('click', async () => {
+    login.disabled = true;
+    loginStatus.textContent = '';
+    try {
+      const author = connectIdeas(root, true)!;
+      const editorUrl = location.origin + localPath('/ideas/admin/', locale);
+      const { data, error } = await author.auth.getSession();
+      if (error) throw error;
+      if (data.session) location.assign(editorUrl);
+      else await signInToIdeas(author, editorUrl);
+    } catch {
+      login.disabled = false;
+      loginStatus.textContent = t.loginError;
+    }
+  });
   if (client) void load();
 </script>
