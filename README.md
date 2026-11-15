@@ -163,4 +163,6 @@ git push origin main
 - `npm run test:content`：在临时副本验证排序、相邻文章、翻译回退、搜索语言隔离，以及原文/译文草稿与孤立译文的排除。
 - `npm run verify`：执行全部发布前检查。
 
-站点不使用数据库、运行时 GitHub API、分析追踪、评论服务或写作后台。
+## 致谢
+
+感谢 [OpenAI Codex](https://github.com/codex) 协助实现博客的页面、双语导航、全文搜索和「灵感」功能。
