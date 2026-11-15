@@ -20,12 +20,14 @@
 
 All tokens live in `:root` in `src/styles/global.css`. Use them instead of raw values.
 
-- Type: `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 14, `--fs-base` 16, `--fs-lg` 18, `--fs-xl` 22, `--fs-2xl` 30, `--fs-display`. Nothing below 12px.
-- Space: `--s-1`…`--s-8` (4, 8, 12, 16, 24, 32, 48, 72). Radius: `--r-sm`, `--r-md`, `--r-pill`.
+- Type: `--label` is the shorthand for mono 12px chrome text; `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 14, `--fs-base` 16, `--fs-lg` 18, `--fs-xl` 22, `--fs-2xl` 30, `--fs-display`. Nothing below 12px.
+- Space: `--s-1`…`--s-8` (4, 8, 12, 16, 24, 32, 48, 72). Radius: `--r-sm` and `--r-md` are both 2px; corners are square, no pills or circles.
 - Width: `--shell` 920px for header, footer and every page; `.page-content` children cap at `--measure` 720px and stay left-aligned. `--rail` 96px is the date/year column shared by post rows and the archive.
 - Colour: `--bg`, `--surface`, `--text`, `--prose`, `--secondary`, `--muted`, `--accent`, `--line`, `--soft`, `--code`. Dark is `:root`; light overrides sit under `:root[data-theme='light']`. Keep body text at 7:1 or better and `--muted` text at 4.5:1 or better in both themes.
-- Fonts: `--serif` for display headings only (brand, page and article titles, post titles, years). `--sans` for body and UI. `--mono` for code only; dates and numbers use sans with `tabular-nums`. System fonts only, no webfonts.
-- Breakpoints: 900px, 760px (header wraps to two rows), 620px (single column; the article script also hard-codes this value).
+- Fonts: `--mono` for interface chrome and metadata (brand, nav, footer, dates, categories, tags, counts, tabs, table of contents, article meta, buttons, eyebrows, prose `h2`/`h3`) and for code. `--sans` for page, post and article titles and for body text. `--serif` only for prose blockquotes. System fonts only, no webfonts.
+- Text-as-UI motifs: `[A]` key hints (`.k`, hidden on touch), `//` eyebrows, `##` heading prefixes, `└` tree marks, `.ascii-bar` progress built by `asciiBar()` in `src/lib/posts.ts`, `.cursor` block caret, `.win-bar` title bar on the profile panel. Blink and entrance animations run only under `prefers-reduced-motion: no-preference`.
+- Header links carry `data-key`; the script in `Header.astro` maps single keys to them and ignores keys typed in form fields or with modifiers. `/` focuses search.
+- Breakpoints: 960px (narrower gutter, header wraps to two rows), 620px (single column; the article script also hard-codes this value).
 - `article.css` is imported by `ArticlePage.astro`, `ideas.css` by the two Ideas pages. Keep page-specific CSS out of `global.css` when it has its own file.
 
 ## Markup the tests depend on

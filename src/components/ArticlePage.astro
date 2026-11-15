@@ -2,8 +2,8 @@
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { site } from '../config';
-import { postUrl, dateLabel, type Post } from '../lib/posts';
-import { copy, categoryName, localPath } from '../i18n';
+import { postUrl, dateLabel, readingMinutes, type Post } from '../lib/posts';
+import { copy, categoryName, localPath, readingTime as readingLabel } from '../i18n';
 import '../styles/article.css';
 interface Props { post: Post }
 const { post } = Astro.props;
@@ -13,11 +13,7 @@ const entry = locale === 'en' && post.translation ? post.translation : post;
 const { Content, headings } = await render(entry);
 const toc = headings.filter(({ depth }) => depth === 2 || depth === 3);
 const alternate = post.translation ? postUrl(post, locale === 'zh' ? 'en' : 'zh') : null;
-const text = (entry.body ?? '').replace(/^```[^\n]*\n[\s\S]*?^```/gm, '').replace(/\]\([^)]+\)/g, ']');
-const han = text.match(/\p{Script=Han}/gu)?.length ?? 0;
-const words = text.replace(/\p{Script=Han}/gu, ' ').match(/[\p{L}\p{N}]+/gu)?.length ?? 0;
-const minutes = Math.max(1, Math.ceil(han / 350 + words / 220));
-const readingTime = locale === 'zh' ? `约 ${minutes} 分钟` : `${minutes} min read`;
+const readingTime = readingLabel(readingMinutes(post), locale);
 ---
 <Base title={post.data.title} description={post.data.description} article published={post.data.date} updated={post.data.updated} alternate={alternate}>
   <div class="article-shell">
@@ -26,6 +22,7 @@ const readingTime = locale === 'zh' ? `约 ${minutes} 分钟` : `${minutes} min 
         <div class:list={['article-content', { 'has-toc': toc.length > 0 }]}>
           <div class="article-reading article-intro">
             <a class="article-back text-link" href={localPath('/blog/', locale)} data-pagefind-ignore>← {t.allPosts}</a>
+            <p class="eyebrow" data-pagefind-ignore>{categoryName(post.data.category, locale)}</p>
             <h1 data-pagefind-meta="title">{post.data.title}</h1>
             <p class="article-description" data-pagefind-meta="description">{post.data.description}</p>
             <dl class="article-meta">
@@ -42,9 +39,11 @@ const readingTime = locale === 'zh' ? `约 ${minutes} 分钟` : `${minutes} min 
         {toc.length > 0 && <aside class="article-sidebar" data-pagefind-ignore>
           <div class="article-progress" hidden>
             <span id="article-progress-label">{t.articleProgress}</span>
-            <span class="article-progress-value" aria-hidden="true">0%</span>
+            <span class="article-progress-value" aria-hidden="true">00%</span>
+            <span class="ascii-bar" aria-hidden="true"><b></b><span>{'░'.repeat(24)}</span></span>
             <progress value="0" max="100" aria-labelledby="article-progress-label"></progress>
           </div>
+          <div class="article-share"><span>{t.share}</span><button class="share-copy" type="button" data-label={t.copyLink} data-done={t.linkCopied}>{t.copyLink}</button></div>
           <details class="article-toc" open>
             <summary>{t.contents}</summary>
             <nav aria-label={t.articleNav}><ol>{toc.map(({ slug, text, depth }) => <li class:list={{ 'toc-nested': depth === 3 }}><a href={`#${slug}`}>{text}</a></li>)}</ol></nav>
@@ -65,6 +64,12 @@ const readingTime = locale === 'zh' ? `约 ${minutes} 分钟` : `${minutes} min 
   const prose = document.querySelector<HTMLElement>('.prose');
   const progress = document.querySelector<HTMLProgressElement>('.article-progress progress');
   const progressValue = document.querySelector<HTMLElement>('.article-progress-value');
+  const progressBar = document.querySelector<HTMLElement>('.article-progress .ascii-bar');
+  const share = document.querySelector<HTMLButtonElement>('.share-copy');
+  share?.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(location.origin + location.pathname); share.textContent = share.dataset.done!; } catch { return; }
+    window.setTimeout(() => { share.textContent = share.dataset.label!; }, 2400);
+  });
   const narrow = matchMedia('(max-width: 620px)');
   const syncToc = () => { if (toc) toc.open = !narrow.matches; };
   syncToc();
@@ -97,7 +102,12 @@ const readingTime = locale === 'zh' ? `约 ${minutes} 分钟` : `${minutes} min 
         const distance = Math.max(1, height - available);
         const percent = Math.round(Math.min(1, Math.max(0, (offset - top) / distance)) * 100);
         progress.value = percent;
-        progressValue.textContent = `${percent}%`;
+        progressValue.textContent = `${String(percent).padStart(2, '0')}%`;
+        if (progressBar) {
+          const filled = Math.round(percent * 24 / 100);
+          progressBar.firstElementChild!.textContent = '█'.repeat(filled);
+          progressBar.lastElementChild!.textContent = '░'.repeat(24 - filled);
+        }
       }
       const scroller = document.scrollingElement;
       const atEnd = scroller && scroller.scrollTop > 0 &&
@@ -131,10 +141,14 @@ const readingTime = locale === 'zh' ? `约 ${minutes} 分钟` : `${minutes} min 
     const container = document.createElement('div');
     container.className = 'code-block';
     pre.before(container); container.append(pre);
+    const head = document.createElement('div');
+    head.className = 'code-head';
+    const language = document.createElement('span');
+    language.textContent = pre.dataset.language && pre.dataset.language !== 'plaintext' ? pre.dataset.language : 'code';
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'copy-code';
     button.textContent = t.copy; button.setAttribute('aria-label',t.copyLabel);
-    container.append(button);
+    head.append(language, button); container.prepend(head);
     const status = document.createElement('span');
     status.className = 'sr-only'; status.setAttribute('role','status'); container.append(status);
     pre.tabIndex = 0; pre.setAttribute('aria-label',t.codeScroll);

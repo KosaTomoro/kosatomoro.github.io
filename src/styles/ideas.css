@@ -1,31 +1,31 @@
-.ideas-page h1 { font: 600 var(--fs-2xl)/1.3 var(--serif); letter-spacing: -.01em; }
-.ideas-page h2, .ideas-compose label { font-size: var(--fs-base); font-weight: 600; }
+.ideas-page h1 { font-size: var(--fs-2xl); font-weight: 600; line-height: 1.3; letter-spacing: -.015em; }
+.ideas-page h2, .ideas-compose label { font: var(--label); letter-spacing: .02em; text-transform: uppercase; color: var(--muted); }
 .ideas-heading, .ideas-actions, .ideas-auth { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }
 .ideas-heading { justify-content: space-between; }
 .ideas-timeline-heading { justify-content: flex-start; margin-bottom: var(--s-5); }
 .ideas-auth { margin: var(--s-3) 0 var(--s-5); }
-.ideas-meta, .ideas-status, .ideas-list time { font-size: var(--fs-sm); color: var(--muted); }
+.ideas-meta, .ideas-status, .ideas-list time { font: var(--label); font-weight: 400; color: var(--muted); }
 .ideas-status:not(:empty) { margin-block: var(--s-3); }
 .ideas-status:empty { display: none; }
 .ideas-workspace { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--s-6); }
-.ideas-compose textarea { display: block; width: 100%; min-height: 120px; margin: var(--s-2) 0 var(--s-3); padding: var(--s-3) var(--s-4); resize: vertical; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); color: var(--text); font: inherit; transition: border-color var(--ease); }
+.ideas-compose textarea { display: block; width: 100%; min-height: 120px; margin: var(--s-2) 0 var(--s-3); padding: var(--s-3) var(--s-4); resize: vertical; border: 1px solid var(--line); border-radius: 0; background: var(--surface); color: var(--text); font: inherit; transition: border-color var(--ease); }
 .ideas-compose textarea:focus { outline: 0; border-color: var(--accent); }
 .ideas-compose textarea::placeholder { color: var(--muted); }
-.ideas-button { min-height: 40px; padding: var(--s-1) var(--s-4); border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--text); font-size: var(--fs-md); }
-.ideas-button:hover { border-color: var(--accent); background: var(--soft); }
+.ideas-button { min-height: 36px; padding: var(--s-1) var(--s-4); border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--text); font: var(--label); font-weight: 400; }
+.ideas-button:hover { border-color: var(--text); background: var(--text); color: var(--bg); }
 .ideas-button.ideas-primary { border-color: var(--accent); background: var(--accent); color: var(--bg); }
 .ideas-button.ideas-primary:hover { opacity: .88; color: var(--bg); }
 .ideas-button:disabled { opacity: .55; cursor: default; }
-.ideas-edit { min-height: 44px; padding: var(--s-1) 0; border: 0; background: transparent; color: var(--accent); font-size: var(--fs-sm); text-decoration: underline; }
+.ideas-edit { min-height: 44px; padding: var(--s-1) 0; border: 0; background: transparent; color: var(--accent); font: var(--label); font-weight: 400; text-decoration: underline; }
 .ideas-list { list-style: none; margin: var(--s-4) 0 0 3px; padding: 0; border-left: 1px solid var(--line); }
 .ideas-list:empty { display: none; }
 .ideas-list li { position: relative; padding: 0 0 var(--s-5) var(--s-5); overflow-wrap: anywhere; }
-.ideas-list li::before { content: ''; position: absolute; left: -4px; top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--bg); }
+.ideas-list li::before { content: ''; position: absolute; left: -4px; top: 7px; width: 7px; height: 7px; background: var(--accent); box-shadow: 0 0 0 3px var(--bg); }
 .ideas-list time { display: block; margin-bottom: var(--s-1); font-variant-numeric: tabular-nums; }
 .ideas-list p { white-space: pre-wrap; color: var(--prose); }
 .ideas-more { margin-top: var(--s-3); }
 .ideas-recent { margin-top: var(--s-6); }
-.ideas-delete-dialog { width: min(380px, calc(100% - 32px)); padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); color: var(--text); }
+.ideas-delete-dialog { width: min(380px, calc(100% - 32px)); padding: var(--s-5); border: 1px solid var(--line); background: var(--surface); color: var(--text); }
 .ideas-delete-dialog .ideas-actions { margin-top: var(--s-4); justify-content: flex-end; }
 .ideas-delete-dialog::backdrop { background: rgb(0 0 0 / .45); }
 @media (max-width: 620px) {

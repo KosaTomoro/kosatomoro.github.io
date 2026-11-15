@@ -30,4 +30,16 @@ export const tagUrl = (tag: string, locale: Locale = 'zh') => localPath(`/tags/$
 export const dateLabel = (date: string) => new Intl.DateTimeFormat('zh-CN', {
   timeZone: site.timezone, year: 'numeric', month: '2-digit', day: '2-digit',
 }).format(new Date(`${date}T00:00:00+08:00`)).replaceAll('/', '.');
+export function readingMinutes(post: Post) {
+  const entry = post.locale === 'en' && post.translation ? post.translation : post;
+  const text = (entry.body ?? '').replace(/^```[^\n]*\n[\s\S]*?^```/gm, '').replace(/\]\([^)]+\)/g, ']');
+  const han = text.match(/\p{Script=Han}/gu)?.length ?? 0;
+  const words = text.replace(/\p{Script=Han}/gu, ' ').match(/[\p{L}\p{N}]+/gu)?.length ?? 0;
+  return Math.max(1, Math.ceil(han / 350 + words / 220));
+}
+/** Text progress bar: [filled, empty] block characters. */
+export function asciiBar(done: number, total: number, width = 20): [string, string] {
+  const filled = done > 0 ? Math.min(width, Math.max(1, Math.round(done / total * width))) : 0;
+  return ['█'.repeat(filled), '░'.repeat(width - filled)];
+}
 export const rssDate = (date: string) => new Date(`${date}T00:00:00+08:00`);

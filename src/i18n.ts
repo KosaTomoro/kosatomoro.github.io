@@ -4,6 +4,7 @@ export const getLocale = (path: string): Locale => path === '/en' || path.starts
 export const withoutLocale = (path: string) => path.replace(/^\/en(?=\/|$)/, '') || '/';
 export const localPath = (path: string, locale: Locale = 'zh') => locale === 'en' ? `/en${path}` : path;
 export const otherPath = (path: string) => localPath(withoutLocale(path), getLocale(path) === 'en' ? 'zh' : 'en');
+export const readingTime = (minutes: number, locale: Locale, short = false) => locale === 'zh' ? `${short ? '' : '约 '}${minutes} 分钟` : `${minutes} min${short ? '' : ' read'}`;
 export const articleCount = (count: number, locale: Locale) => locale === 'zh' ? `${count} 篇文章` : `${count} ${count === 1 ? 'essay' : 'essays'}`;
 export const categoryName = (category: string, locale: Locale) => locale === 'zh' ? category : ({ '技术': 'Technology', '生活': 'Life' }[category] ?? category);
 const tagTranslations: Record<string, string> = { '职业思考': 'Career', '个人成长': 'Personal growth', '分库分表': 'Sharding', '短链接系统': 'URL shortener', '短链系统': 'URL shortener' };
@@ -30,7 +31,8 @@ const zh = {
   allPosts: '所有文章', updated: '更新于', contents: '本文目录', articleNav: '文章目录',
   articleAuthor: '作者', articleCategory: '分类', articlePublished: '发布于', articleReadingTime: '阅读时间', articleProgress: '阅读进度',
   returnBlog: '返回文章列表',
-  copy: '复制代码', copyLabel: '复制此代码块', codeScroll: '代码，可横向滚动',
+  share: '分享', copyLink: '复制链接', linkCopied: '链接已复制 ✓',
+  copy: '复制', copyLabel: '复制此代码块', codeScroll: '代码，可横向滚动',
   copied: '已复制 ✓', copiedStatus: '代码已复制到剪贴板',
   manualCopy: '请按 Ctrl / ⌘ + C', manualCopyStatus: '已选中代码，请使用系统复制快捷键',
   searchEyebrow: '寻找一个想法', searchIntro: '输入关键词，搜索文章标题与正文。',
@@ -70,7 +72,8 @@ const en: Record<keyof typeof zh, string> = {
   allPosts: 'All essays', updated: 'Updated', contents: 'On this page', articleNav: 'Table of contents',
   articleAuthor: 'Author', articleCategory: 'Category', articlePublished: 'Published', articleReadingTime: 'Reading time', articleProgress: 'Reading progress',
   returnBlog: 'Back to all essays',
-  copy: 'Copy code', copyLabel: 'Copy this code block', codeScroll: 'Code; scroll horizontally',
+  share: 'Share', copyLink: 'Copy URL', linkCopied: 'URL copied ✓',
+  copy: 'Copy', copyLabel: 'Copy this code block', codeScroll: 'Code; scroll horizontally',
   copied: 'Copied ✓', copiedStatus: 'Code copied to the clipboard',
   manualCopy: 'Press Ctrl / ⌘ + C', manualCopyStatus: 'Code selected. Use your system copy shortcut.',
   searchEyebrow: 'FIND A THOUGHT', searchIntro: 'Search article titles and full text.',

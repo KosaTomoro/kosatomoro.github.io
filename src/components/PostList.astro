@@ -1,12 +1,12 @@
 ---
-import { dateLabel, postUrl, tagUrl, type Post } from '../lib/posts';
-import { categoryName, tagName } from '../i18n';
+import { dateLabel, postUrl, readingMinutes, tagUrl, type Post } from '../lib/posts';
+import { categoryName, readingTime, tagName } from '../i18n';
 interface Props { posts: Post[]; headingLevel?: 'h2' | 'h3' }
 const { posts, headingLevel: Heading = 'h2' } = Astro.props;
 ---
 <div class="post-list">
-  {posts.map((post) => <article class="post-row">
-    <div class="post-date"><time datetime={post.data.date}>{dateLabel(post.data.date)}</time><span class="post-category">{categoryName(post.data.category, post.locale)}</span></div>
+  {posts.map((post, index) => <article class="post-row" style={`--i:${Math.min(index, 8)}`}>
+    <div class="post-date"><time datetime={post.data.date}>{dateLabel(post.data.date)}</time><span class="post-category">{categoryName(post.data.category, post.locale)}</span><span class="post-reading">{readingTime(readingMinutes(post), post.locale, true)}</span></div>
     <div class="post-summary">
       <Heading><a href={postUrl(post)}>{post.data.title}<span class="post-arrow" aria-hidden="true">→</span></a></Heading>
       <p>{post.data.description}</p>

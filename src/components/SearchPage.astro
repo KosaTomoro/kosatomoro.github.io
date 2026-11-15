@@ -6,10 +6,10 @@ const t = copy(locale);
 ---
 <Base title={t.search} noindex>
   <div class="shell page-content search-page">
-    <header class="page-heading"><p class="eyebrow">{t.searchEyebrow}</p><h1>{t.search}<span class="accent">.</span></h1><p>{t.searchIntro}</p></header>
+    <header class="page-heading"><p class="eyebrow">{t.searchEyebrow}</p><h1>{t.search}<span class="cursor" aria-hidden="true"></span></h1><p>{t.searchIntro}</p></header>
     <form id="search-form" role="search" autocomplete="off">
       <label class="sr-only" for="search-input">{t.searchLabel}</label>
-      <div class="search-field"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg><input id="search-input" name="q" type="search" placeholder={t.searchPlaceholder} /><button type="submit">{t.search} <span aria-hidden="true">↵</span></button></div>
+      <div class="search-field"><span class="search-prompt" aria-hidden="true">&gt;</span><input id="search-input" name="q" type="search" placeholder={t.searchPlaceholder} /><button type="submit">{t.search} <span aria-hidden="true">↵</span></button></div>
     </form>
     <p id="search-status" class="search-status" role="status" aria-live="polite">{t.searchStart}</p>
     <div id="search-results" class="search-results"></div>
@@ -84,4 +84,5 @@ const t = copy(locale);
   input.addEventListener('input', () => { ++sequence; clearTimeout(timer); timer = setTimeout(search, 200); });
   input.value = new URL(location.href).searchParams.get('q') ?? '';
   if (input.value) void search();
+  if (location.hash === '#search-input') input.focus();
 </script>
