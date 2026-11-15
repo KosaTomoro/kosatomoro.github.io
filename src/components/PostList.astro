@@ -6,9 +6,9 @@ const { posts, headingLevel: Heading = 'h2' } = Astro.props;
 ---
 <div class="post-list">
   {posts.map((post) => <article class="post-row">
-    <div class="post-date"><time datetime={post.data.date}>{dateLabel(post.data.date)}</time><span aria-hidden="true">·</span><span>{categoryName(post.data.category, post.locale)}</span></div>
+    <div class="post-date"><time datetime={post.data.date}>{dateLabel(post.data.date)}</time><span class="post-category">{categoryName(post.data.category, post.locale)}</span></div>
     <div class="post-summary">
-      <Heading><a href={postUrl(post)}>{post.data.title}<span aria-hidden="true">→</span></a></Heading>
+      <Heading><a href={postUrl(post)}>{post.data.title}<span class="post-arrow" aria-hidden="true">→</span></a></Heading>
       <p>{post.data.description}</p>
       <div class="post-tags">{post.data.tags.map((tag) => <a href={tagUrl(tag, post.locale)}>#{tagName(tag, post.locale)}</a>)}</div>
     </div>

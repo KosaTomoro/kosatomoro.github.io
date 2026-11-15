@@ -17,6 +17,7 @@ const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.do
     <ol class="life-list">{items.map(item => <li class="life-item" data-status={item.status}>
       <span class="life-number">{String(item.id).padStart(2,'0')}</span><span class="status-mark" aria-hidden="true">{item.status==='done'?'✓':item.status==='doing'?'–':'×'}</span>
       <div><h2>{item.title[locale]}<span class="sr-only"> — {statuses[item.status]}</span></h2>
+        {item.description && <p>{item.description[locale]}</p>}
         {item.completed && <time datetime={item.completed}>{item.completed}</time>}
         {item.post && <a class="text-link" href={localPath(`/blog/${item.post}/`,locale)}>{t.listArticle} →</a>}
       </div>

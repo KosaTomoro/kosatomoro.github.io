@@ -17,7 +17,7 @@ const navigation = [
 const isActive = (href: string) => href === '/' ? current === '/' : current.startsWith(href);
 ---
 <header class="site-header shell">
-  <a class="mobile-brand" href={localPath('/', locale)}>{site.name}</a>
+  <a class="site-brand" href={localPath('/', locale)}>{site.name}</a>
   <nav class="primary-nav" aria-label={t.nav}>
     {navigation.map(({ href, label }) => <a href={localPath(href, locale)} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>)}
     <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span><span class="sr-only">{t.newWindow}</span></a>

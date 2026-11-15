@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import { site } from '../config';
 import { postUrl, dateLabel, type Post } from '../lib/posts';
 import { copy, categoryName, localPath } from '../i18n';
+import '../styles/article.css';
 interface Props { post: Post }
 const { post } = Astro.props;
 const locale = post.locale;

@@ -11,7 +11,7 @@ const years = [...new Set(posts.map(({ data }) => data.date.slice(0, 4)))];
   <div class="shell page-content">
     <div class="archive-list">{years.map(year => <section class="archive-year" aria-labelledby={`year-${year}`}>
       <div class="archive-year-label"><h2 id={`year-${year}`}>{year}</h2><span>{articleCount(posts.filter(({data}) => data.date.startsWith(year)).length, locale)}</span></div>
-      <ul>{posts.filter(({ data }) => data.date.startsWith(year)).map(post => <li><time datetime={post.data.date}>{dateLabel(post.data.date).slice(5)}</time><a href={postUrl(post)}>{post.data.title}</a></li>)}</ul>
+      <ul>{posts.filter(({ data }) => data.date.startsWith(year)).map(post => <li><a href={postUrl(post)}><time datetime={post.data.date}>{dateLabel(post.data.date).slice(5)}</time><span>{post.data.title}</span></a></li>)}</ul>
     </section>)}</div>
     {!posts.length && <p class="empty-state">{t.noPosts}</p>}
     <div class="browse-note"><a href={localPath('/blog/', locale)}>{t.viewSummaries} →</a></div>
