@@ -10,9 +10,8 @@ export default defineConfig({
     i18n: { defaultLocale: 'zh', locales: { zh: 'zh-CN', en: 'en' } },
   })],
   markdown: {
-    shikiConfig: {
-      themes: { light: 'github-light', dark: 'github-dark' },
-      wrap: false,
-    },
+    // Syntax colours come from the --astro-code-* tokens in src/styles/global.css,
+    // so code blocks follow the light and dark themes like everything else.
+    shikiConfig: { theme: 'css-variables', wrap: false },
   },
 });

@@ -1,43 +1,40 @@
 ---
 import Base from '../layouts/Base.astro';
+import ListProgress from './ListProgress.astro';
 import PostList from './PostList.astro';
 import { site } from '../config';
 import { copy, getLocale, localPath } from '../i18n';
-import { asciiBar, getPosts } from '../lib/posts';
+import { getPosts } from '../lib/posts';
 import { lifeList } from '../data/list100';
 const locale = getLocale(Astro.url.pathname);
 const t = copy(locale);
 const recent = (await getPosts(locale)).slice(0, 3);
 const completed = lifeList.filter(({ status }) => status === 'done').length;
-const [filled, empty] = asciiBar(completed, 100);
 ---
 <Base title={t.about}>
   <div class="shell about-page">
-    <article class="about-grid" aria-labelledby="about-title">
-      <div class="about-content">
-        <header class="about-heading"><p class="eyebrow">{t.aboutEyebrow}</p><h1 id="about-title">{site.name}<span class="cursor" aria-hidden="true"></span></h1><p class="intro-line">{t.personalLine}</p></header>
-        <div class="about-body"><p>{t.hello}</p><p>{t.introOne}</p><p>{t.introTwo}</p></div>
-        {recent.length > 0 && <section class="home-section" aria-labelledby="recent-title">
-          <div class="section-heading"><h2 id="recent-title">{t.recent}</h2><a class="text-link" href={localPath('/blog/', locale)}>{t.allPosts} →</a></div>
-          <PostList posts={recent} headingLevel="h3" />
-        </section>}
-        <a class="home-progress" href={localPath('/list-100/', locale)}>
-          <span>List100</span>
-          <span class="ascii-bar" aria-hidden="true">[<b>{filled}</b>{empty}]</span>
-          <span class="home-progress-value">{completed} / 100</span>
-        </a>
-      </div>
+    <article class="about-hero" aria-labelledby="about-title">
+      <header class="about-heading"><p class="eyebrow">{t.aboutEyebrow}</p><h1 id="about-title">{site.name}</h1><p class="intro-line">{t.personalLine}</p></header>
       <aside class="about-profile" aria-label={t.profile}>
-        <p class="win-bar" aria-hidden="true"><span>{t.profile}</span><span>— □ ×</span></p>
-        <img src={site.avatar} width="72" height="72" alt={t.avatar} />
+        <div class="profile-portrait"><img src={site.avatar} width="352" height="352" alt={t.avatar} /></div>
         <div class="profile-details">
           <p class="birth"><span>{t.born}</span><time datetime={site.birthDate}>{site.birth}</time></p>
+          <section class="experience" aria-labelledby="experience-title">
+            <h2 id="experience-title">{t.experience}</h2>
+            <ol>{site.experience.map(({ period, company, role }) => <li><span class="experience-period">{period}</span><span class="experience-job"><strong>{company}</strong> <span>({role})</span></span></li>)}</ol>
+          </section>
         </div>
-        <section class="experience" aria-labelledby="experience-title">
-          <h2 id="experience-title">{t.experience}</h2>
-          <ol>{site.experience.map(({ period, company, role }) => <li><span class="experience-period">{period}</span><span class="experience-job"><strong>{company}</strong> <span>({role})</span></span></li>)}</ol>
-        </section>
       </aside>
+      <div class="about-body"><p>{t.hello}</p><p>{t.introOne}</p><p>{t.introTwo}</p></div>
     </article>
+    {recent.length > 0 && <section class="home-section" aria-labelledby="recent-title">
+      <div class="section-heading"><h2 id="recent-title">{t.recent}</h2><a class="text-link" href={localPath('/blog/', locale)}>{t.allPosts} →</a></div>
+      <PostList posts={recent} headingLevel="h3" />
+    </section>}
+    <a class="home-progress" href={localPath('/list-100/', locale)}>
+      <span class="home-progress-title">List100</span>
+      <ListProgress />
+      <span class="home-progress-value">{completed} / 100 <span aria-hidden="true">→</span></span>
+    </a>
   </div>
 </Base>

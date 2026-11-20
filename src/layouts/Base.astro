@@ -44,6 +44,9 @@ const year = new Intl.DateTimeFormat('en', { timeZone: site.timezone, year: 'num
     {published && <meta property="article:published_time" content={`${published}T00:00:00+08:00`} />}
     {updated && <meta property="article:modified_time" content={`${updated}T00:00:00+08:00`} />}
     {noindex && <meta name="robots" content="noindex, follow" />}
+    {/* Pages cross-fade into each other. The opt-in is inlined here on purpose: read from the external
+        stylesheet, Chrome sometimes decided before the rule arrived, skipped the fade and logged an error. */}
+    <style is:inline>@view-transition { navigation: auto; }</style>
     <script is:inline>
       (() => {
         let theme;

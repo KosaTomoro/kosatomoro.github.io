@@ -20,14 +20,18 @@
 
 All tokens live in `:root` in `src/styles/global.css`. Use them instead of raw values.
 
-- Type: `--label` is the shorthand for mono 12px chrome text; `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 14, `--fs-base` 16, `--fs-lg` 18, `--fs-xl` 22, `--fs-2xl` 30, `--fs-display`. Nothing below 12px.
-- Space: `--s-1`…`--s-8` (4, 8, 12, 16, 24, 32, 48, 72). Radius: `--r-sm` and `--r-md` are both 2px; corners are square, no pills or circles.
-- Width: `--shell` 920px for header, footer and every page; `.page-content` children cap at `--measure` 720px and stay left-aligned. `--rail` 96px is the date/year column shared by post rows and the archive.
-- Colour: `--bg`, `--surface`, `--text`, `--prose`, `--secondary`, `--muted`, `--accent`, `--line`, `--soft`, `--code`. Dark is `:root`; light overrides sit under `:root[data-theme='light']`. Keep body text at 7:1 or better and `--muted` text at 4.5:1 or better in both themes.
-- Fonts: `--mono` for interface chrome and metadata (brand, nav, footer, dates, categories, tags, counts, tabs, table of contents, article meta, buttons, eyebrows, prose `h2`/`h3`) and for code. `--sans` for page, post and article titles and for body text. `--serif` only for prose blockquotes. System fonts only, no webfonts.
-- Text-as-UI motifs: `[A]` key hints (`.k`, hidden on touch), `//` eyebrows, `##` heading prefixes, `└` tree marks, `.ascii-bar` progress built by `asciiBar()` in `src/lib/posts.ts`, `.cursor` block caret, `.win-bar` title bar on the profile panel. Blink and entrance animations run only under `prefers-reduced-motion: no-preference`.
-- Header links carry `data-key`; the script in `Header.astro` maps single keys to them and ignores keys typed in form fields or with modifiers. `/` focuses search.
-- Breakpoints: 960px (narrower gutter, header wraps to two rows), 620px (single column; the article script also hard-codes this value).
+- Colour: `--bg`, `--surface`, `--soft`, `--code`, `--line`, `--line-strong`, `--text`, `--prose`, `--secondary`, `--muted`, `--accent`, `--gold`, `--on-gold`. Dark is `:root` (gold accent); light overrides sit under `:root[data-theme='light']` (brick-red accent). `--gold` is a fill and always carries `--on-gold` text: selection, `mark`, finished List100 cells, primary buttons.
+- Contrast, in both themes: body text 7:1 or better, `--muted` and `--accent` text 4.5:1 or better, `--line-strong` 3:1 or better because form controls use it as their border. `--line` is for dividers only.
+- Syntax colours are the `--astro-code-*` variables next to the palette. `astro.config.mjs` selects Shiki's `css-variables` theme, so code carries no inline theme colours; keep each token at 4.5:1 or better on `--code`.
+- Type: `--fs-xs` 12, `--fs-sm` 13, `--fs-md` 15, `--fs-base` 16, `--fs-lg` 18, `--fs-xl` 22, `--fs-2xl` 28, `--fs-3xl` for page and article titles, `--fs-display` for the name on the home page. `--label` is the shorthand for small spaced labels, `--meta` for mono dates and counts. Nothing below 12px.
+- Fonts: `--serif` for the brand, titles, section and prose headings, large numerals and blockquotes. `--sans` for body text, navigation, labels and buttons. `--mono` for dates, counts, tags, key hints and code. System fonts only, no webfonts. The serif stack ends in a sans CJK font on purpose, so Chinese on Windows never falls back to SimSun.
+- Space: `--s-1`…`--s-9` (4, 8, 12, 16, 24, 32, 48, 72, 104). There is no border radius anywhere: corners are square, no pills or circles.
+- Width: `--shell` 960px for header, footer and every page, and rows span the whole shell rather than a narrower left-aligned column. `--rail` 132px is the date/year column shared by post rows and the archive. Articles pair a 208px rail with the reading column; an article without headings becomes one centred 720px column.
+- Background: `body` layers a top-right glow (`--glow`) and a paper grain (`--grain`, an inline SVG) over `--bg`. Article pages drop the glow because their header is sticky and opaque.
+- Motifs: the sunrise mark (`Icon name="sunrise"`, also the favicon and the ornament that closes an article), 5px square marks (list bullets, timeline points, `hr`, the corners of the profile frame), short accent rules (eyebrows, prose `h2`), dotted leaders in the archive, and the List100 cell grid from `ListProgress.astro`. Entrance animations run only under `prefers-reduced-motion: no-preference`.
+- Pages cross-fade through `@view-transition`, which is inlined in the head of `Base.astro` rather than kept in `global.css`: read from the external stylesheet, Chrome intermittently skipped the fade on pages with a module script and logged an unhandled rejection. Reduced motion switches the fade's animations off in `global.css`. The theme toggle fades with `document.startViewTransition` and catches the `ready` rejection of a skipped fade.
+- Header links carry `data-key`; the script in `Header.astro` maps single keys to them and ignores keys typed in form fields or with modifiers. `/` focuses search. Only the search box shows its key hint (`.k`, hidden on touch).
+- Breakpoints: 940px (narrower gutter, header wraps to two rows and stops following the reader on articles), 620px (single column; the article script also hard-codes this value). The widest header is the English one with Ideas enabled; re-measure it before moving the 940px breakpoint.
 - `article.css` is imported by `ArticlePage.astro`, `ideas.css` by the two Ideas pages. Keep page-specific CSS out of `global.css` when it has its own file.
 
 ## Markup the tests depend on
@@ -36,17 +40,18 @@ All tokens live in `:root` in `src/styles/global.css`. Use them instead of raw v
 
 - `nav.primary-nav` may contain only the page links in order, then GitHub last. The brand link stays outside it.
 - Home: `aside.about-profile`, the exact `span.experience-job` markup, `p.intro-line`, avatar `src` before `alt`, and the inline theme script in `Base.astro` (the test matches its `'dark'` default).
-- Article: `class="article-content has-toc"`, `body.article-page`, `.article-toc` before the body `.article-reading`, one "back to list" link, and equal `h2`/`h3` counts between the Chinese and English pages (do not add headings to article chrome).
+- Article: `class="article-content has-toc"`, `body.article-page`, `.article-toc` before the element whose class is exactly `article-reading`, one "back to list" link, and equal `h2`/`h3` counts between the Chinese and English pages (do not add headings to article chrome).
 - Lists: `class="post-row"` is counted; blog, archive and List100 must not gain `class="page-heading"`.
-- List100: `li.life-item[data-status]` and `span.status-mark` with its attribute order and ✓ / – / × characters.
-- Script hooks: `.theme-toggle`, `a.language-switch`, `.prose`, `.article-progress`, `#search-form`, `#search-input`, `#search-status`, `#search-results`, `[data-*]` attributes and `.ideas-edit` on the Ideas pages.
+- List100: `li.life-item[data-status]` and `span.status-mark` with its attribute order and ✓ / – / × characters. CSS hides those characters and draws a checkbox instead. The tests count `data-status`, so the cell grid marks its cells with classes.
+- Script hooks: `.theme-toggle`, `a.language-switch`, `.prose`, `.article-progress` and the `progress` inside it, `.share-copy`, `.article-toc`, `#search-form`, `#search-input`, `#search-status`, `#search-results`, `[data-*]` attributes and `.ideas-edit` on the Ideas pages.
 
 ## Visual QA
 
 - Build, then `npm run preview -- --port <port>` and capture 390, 768 and 1440px in both themes and both locales. Keep screenshots and helper scripts under the ignored `.qa/`.
-- Headless Chrome over the DevTools protocol works without extra dependencies: set the viewport with `Emulation.setDeviceMetricsOverride`, set `localStorage.theme` before reloading to switch theme, and compare `scrollWidth` with `clientWidth` to catch horizontal overflow.
+- Headless Chrome over the DevTools protocol works without extra dependencies: set the viewport with `Emulation.setDeviceMetricsOverride`, set `localStorage.theme` before the page loads to switch theme, and compare `scrollWidth` with `clientWidth` to catch horizontal overflow.
 - Stop the preview server and the browser when finished.
-- Known gaps in real content: no published post has a code block, so the copy button needs a temporary fixture to exercise; Ideas with data needs the Supabase variables.
+- Real content has one post and no code block. To see code, tables, several years of posts or a post without headings, copy the project to a temporary directory outside the repository and add fixture posts there, the way `scripts/test-content.mjs` does. Do not add fixtures under `src/content/`.
+- The Ideas link and pages only render with the Supabase variables. For layout checks, build that temporary copy with a placeholder URL on a closed local port and a placeholder `sb_publishable_` key: the pages then show their error state without contacting any service.
 
 ## Commits
 

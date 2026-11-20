@@ -1,0 +1,10 @@
+---
+import { lifeList } from '../data/list100';
+// One cell per List100 slot, coloured by the status of the entry with that ID.
+// Pass `label` when the grid stands alone; leave it out when nearby text says the same.
+interface Props { label?: string; numbered?: boolean }
+const { label, numbered = false } = Astro.props;
+const statuses = new Map(lifeList.map(({ id, status }) => [id, status]));
+const cells = Array.from({ length: 100 }, (_, index) => ({ id: index + 1, status: statuses.get(index + 1) }));
+---
+<span class:list={['list-progress', { numbered }]} role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : 'true'}>{cells.map(({ id, status }) => <span class:list={[status]}>{numbered && status ? id : ''}</span>)}</span>

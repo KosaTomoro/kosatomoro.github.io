@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import ListProgress from './ListProgress.astro';
 import { copy, getLocale, localPath } from '../i18n';
 import { lifeList, type LifeStatus } from '../data/list100';
 const locale = getLocale(Astro.url.pathname);
@@ -10,10 +11,11 @@ const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.do
 ---
 <Base title="List100" description={`${t.listIntro} ${t.listIntroTwo}`}>
   <div class="shell page-content list-page">
-    <div class="progress-summary"><span><strong>{completed} {locale === 'zh' ? '项已完成' : 'completed'}</strong> / {t.possibilities}</span><span>{t.future}</span></div>
-    <div class="list-progress" role="img" aria-label={locale === 'zh' ? `100 个位置中，${completed} 项已完成` : `${completed} completed out of 100 possible entries`}>
-      {Array.from({length:100},(_,i) => <span class:list={{done:i<completed}}></span>)}
+    <div class="progress-summary">
+      <p class="progress-count"><strong>{completed}</strong><span>{locale === 'zh' ? '项已完成' : 'completed'} <small>/ {t.possibilities}</small></span></p>
+      <p class="progress-note">{t.future}</p>
     </div>
+    <ListProgress numbered label={locale === 'zh' ? `100 个位置中，${completed} 项已完成` : `${completed} completed out of 100 possible entries`} />
     <ol class="life-list">{items.map(item => <li class="life-item" data-status={item.status}>
       <span class="life-number">{String(item.id).padStart(2,'0')}</span><span class="status-mark" aria-hidden="true">{item.status==='done'?'✓':item.status==='doing'?'–':'×'}</span>
       <div><h2>{item.title[locale]}<span class="sr-only"> — {statuses[item.status]}</span></h2>

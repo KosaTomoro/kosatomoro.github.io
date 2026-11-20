@@ -37,9 +37,4 @@ export function readingMinutes(post: Post) {
   const words = text.replace(/\p{Script=Han}/gu, ' ').match(/[\p{L}\p{N}]+/gu)?.length ?? 0;
   return Math.max(1, Math.ceil(han / 350 + words / 220));
 }
-/** Text progress bar: [filled, empty] block characters. */
-export function asciiBar(done: number, total: number, width = 20): [string, string] {
-  const filled = done > 0 ? Math.min(width, Math.max(1, Math.round(done / total * width))) : 0;
-  return ['█'.repeat(filled), '░'.repeat(width - filled)];
-}
 export const rssDate = (date: string) => new Date(`${date}T00:00:00+08:00`);

@@ -17,18 +17,18 @@ const navigation = [
 const isActive = (href: string) => href === '/' ? current === '/' : current.startsWith(href);
 ---
 <header class="site-header shell">
-  <a class="site-brand" href={localPath('/', locale)}>{site.name}</a>
+  <a class="site-brand" href={localPath('/', locale)}><Icon name="sunrise" size={22} /><span>{site.name}</span></a>
   <nav class="primary-nav" aria-label={t.nav}>
-    {navigation.map(({ href, label, key }) => <a href={localPath(href, locale)} aria-current={isActive(href) ? 'page' : undefined} data-key={key} aria-keyshortcuts={key}><span class="k" aria-hidden="true">[{key.toUpperCase()}]</span><span class="w">{label}</span></a>)}
-    <a href={site.github} target="_blank" rel="noopener noreferrer" data-key="g" aria-keyshortcuts="g"><span class="k" aria-hidden="true">[G]</span><span class="w">GitHub</span> <span aria-hidden="true">↗</span><span class="sr-only">{t.newWindow}</span></a>
+    {navigation.map(({ href, label, key }) => <a href={localPath(href, locale)} aria-current={isActive(href) ? 'page' : undefined} data-key={key} aria-keyshortcuts={key}><span>{label}</span></a>)}
+    <a href={site.github} target="_blank" rel="noopener noreferrer" data-key="g" aria-keyshortcuts="g"><span>GitHub <span aria-hidden="true">↗</span></span><span class="sr-only">{t.newWindow}</span></a>
   </nav>
   <div class="header-tools">
-    <a class="search-link" href={localPath('/search/', locale)} aria-current={isActive('/search/') ? 'page' : undefined} data-key="/" aria-keyshortcuts="/"><span class="k" aria-hidden="true">[/]</span><span class="w">{t.search}</span></a>
+    <a class="search-link" href={localPath('/search/', locale)} aria-current={isActive('/search/') ? 'page' : undefined} data-key="/" aria-keyshortcuts="/"><Icon name="search" size={15} /><span class="w">{t.search}</span><kbd class="k" aria-hidden="true">/</kbd></a>
     {alternate ? <a class="language-switch" href={alternate} data-locale={locale === 'zh' ? 'en' : 'zh'} aria-label={locale === 'zh' ? 'Switch to English' : '切换到中文'} title={locale === 'zh' ? 'Switch to English' : '切换到中文'} hreflang={locale === 'zh' ? 'en' : 'zh-CN'}>
       <span class:list={{ selected: locale === 'zh' }}>中</span><span class="separator" aria-hidden="true">/</span><span class:list={{ selected: locale === 'en' }}>EN</span>
     </a> : <span class="language-switch unavailable" title={t.noTranslation} aria-label={t.noTranslation}><span class="selected">中</span><span class="separator" aria-hidden="true">/</span><span>EN</span></span>}
     <button class="icon-button theme-toggle" type="button" aria-label={t.switchLight} data-light={t.switchLight} data-dark={t.switchDark} hidden>
-      <span class="theme-moon"><Icon name="moon" size={19} /></span><span class="theme-sun"><Icon name="sun" size={19} /></span>
+      <span class="theme-moon"><Icon name="moon" size={18} /></span><span class="theme-sun"><Icon name="sun" size={18} /></span>
     </button>
   </div>
 </header>
@@ -40,13 +40,18 @@ const isActive = (href: string) => href === '/' ? current === '/' : current.star
     toggle.setAttribute('aria-label', label); toggle.title = label;
   };
   if (toggle) { toggle.hidden = false; updateLabel(); }
+  // Tracked here rather than read back from the page: the attribute lags while a cross-fade is being prepared.
+  let theme = document.documentElement.dataset.theme;
   toggle?.addEventListener('click', () => {
-    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
+    const next = theme = theme === 'dark' ? 'light' : 'dark';
+    const apply = () => { document.documentElement.dataset.theme = next; updateLabel(); };
+    // Cross-fade between themes where the browser can; otherwise switch at once. A skipped fade
+    // (a second click, a page change under way) still applies the theme and only rejects `ready`.
+    if ('startViewTransition' in document && matchMedia('(prefers-reduced-motion: no-preference)').matches) document.startViewTransition(apply).ready.catch(() => {});
+    else apply();
     try { localStorage.setItem('theme', next); } catch {}
-    updateLabel();
   });
-  // Single-key navigation: [A] [B] … in the header, "/" for search.
+  // Single-key navigation: each header link carries data-key; "/" focuses search.
   document.addEventListener('keydown', (event) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.isComposing || event.repeat) return;
     if ((event.target as HTMLElement | null)?.closest('input, textarea, select, [contenteditable], dialog')) return;
@@ -58,8 +63,11 @@ const isActive = (href: string) => href === '/' ? current === '/' : current.star
     else link.click();
   });
   const language = document.querySelector<HTMLAnchorElement>('a.language-switch');
-  if (language && location.pathname.endsWith('/search/')) language.search = location.search;
+  // On the search page the switch carries the query, including one typed after the page loaded.
+  const keepQuery = () => { if (language && location.pathname.endsWith('/search/')) language.search = location.search; };
+  keepQuery();
   language?.addEventListener('click', () => {
+    keepQuery();
     try { localStorage.setItem('language', language.dataset.locale!); } catch {}
   });
 </script>

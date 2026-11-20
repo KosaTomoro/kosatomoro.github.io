@@ -1,6 +1,6 @@
 # Repository instructions
 
-This repository is Kosa Tomoro's bilingual public blog at `https://kosatomoro.github.io/`. It is a static Astro site deployed by GitHub Actions. Preserve the code-flavoured direction: charcoal by default, warm off-white in light mode, muted green accents, square corners and 1px rules, monospace for interface chrome and metadata, sans-serif for titles and reading, and text characters as UI (bracketed key hints, `└` tree marks, block-character progress bars). Borrow techniques only; do not copy claude.dev fonts, assets, source, or text. Do not copy Polebug assets, source, text, or its interactive house.
+This repository is Kosa Tomoro's bilingual public blog at `https://kosatomoro.github.io/`. It is a static Astro site deployed by GitHub Actions. Preserve the warm print direction, whose palette comes from the avatar illustration: warm black with gold accents by default, cream paper with brick-red accents in light mode, mustard as the highlight fill, square corners and 1px rules, serif for titles, sans-serif for reading and interface text, monospace for dates, counts and code, and small square marks and the sunrise mark as the recurring ornaments. Do not copy claude.dev fonts, assets, source, or text. Do not copy Polebug assets, source, text, or its interactive house.
 
 ## Working agreement
 
@@ -40,7 +40,7 @@ This repository is Kosa Tomoro's bilingual public blog at `https://kosatomoro.gi
 - Public internal page URLs have trailing slashes except file endpoints such as `/rss.xml` and `/robots.txt`.
 - Production metadata must use `https://kosatomoro.github.io`. This user-site repository deploys at the domain root; do not add an Astro `base` path.
 - Pagefind runs after Astro. It must index only published article detail pages and keep Chinese and English indexes separate through correct HTML `lang` attributes.
-- Desktop articles use a left sticky rail (table of contents, text progress bar, copy-link) and right reading column. Code blocks get a header strip with the language and a text copy button. Mobile articles use a compact collapsible table of contents above the body.
+- Desktop articles use a left sticky rail (table of contents, reading progress, copy-link) beside the heading and reading column. Code blocks get a header strip with the language and a text copy button, and take their syntax colours from CSS variables. Mobile articles use a compact collapsible table of contents above the body and a progress hairline pinned to the top edge.
 - The site defaults to dark mode; explicit theme choice persists locally. The locale switch uses the equivalent localized route and preserves search queries.
 - External links opened in new tabs need `rel="noopener noreferrer"` and accessible new-window context where useful.
 - Do not commit `dist/`, `.astro/`, `node_modules/`, `.qa/`, local environment files, credentials, tokens, browser artifacts, or unrequested local drafts.
