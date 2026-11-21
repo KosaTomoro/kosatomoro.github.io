@@ -30,6 +30,7 @@ This repository is Kosa Tomoro's bilingual public blog at `https://kosatomoro.gi
 
 - Add only goals explicitly confirmed by the user; never use examples or invented ambitions to fill the page.
 - IDs must be unique integers from 1 to 100 and remain stable after publication.
+- The page and the cell grid follow `orderedLifeList`: `done`, then `doing`, then `todo`, each group in ID order. The number shown beside an entry is its position in that order, not its ID, so never renumber IDs to move an entry.
 - Every item needs natural Chinese and English titles. Optional descriptions must also have both locales.
 - Valid statuses are `todo`, `doing`, and `done`. Use `YYYY-MM-DD` for `completed`; `post` refers to a stable article slug.
 

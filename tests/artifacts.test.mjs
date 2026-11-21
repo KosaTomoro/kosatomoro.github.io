@@ -140,21 +140,44 @@ test('bilingual pages, alternates, RSS and search indexes are complete', () => {
 test('List100 publishes all confirmed entries in both languages', () => {
   for(const prefix of ['', 'en/']) {
     const html = read(`${prefix}list-100/index.html`);
-    assert.equal((html.match(/class="life-item"/g) ?? []).length,10);
-    assert.match(html,/data-status="done"/);
-    assert.equal((html.match(/data-status="todo"/g) ?? []).length,9);
-    assert.equal((html.match(/class="status-mark"/g) ?? []).length,10);
+    assert.equal((html.match(/class="life-item"/g) ?? []).length,16);
+    assert.equal((html.match(/data-status="done"/g) ?? []).length,2);
+    assert.equal((html.match(/data-status="todo"/g) ?? []).length,14);
+    assert.equal((html.match(/class="status-mark"/g) ?? []).length,16);
     assert.match(html,/class="status-mark" aria-hidden="true">✓/);
     assert.match(html,/class="status-mark" aria-hidden="true">×/);
     assert.match(html, prefix ? /Release an app of my own/ : /发布一款自己的 App/);
-    assert.match(html, prefix ? /Travel to Spain/ : /去西班牙旅行/);
+    assert.match(html, prefix ? /Travel to Europe/ : /去欧洲旅行/);
     assert.match(html, prefix ? /Walk the Camino de Santiago in Spain/ : /走完西班牙朝圣之路/);
-    assert.match(html, prefix ? /fosters so much creativity/ : /拥有如此丰富的创造力/);
+    assert.match(html, prefix ? /Live in another country\/region/ : /居住在其他国家\/地区/);
+    assert.match(html, prefix ? /Propose to my partner and get married/ : /跟我爱人求婚并结婚/);
     assert.doesNotMatch(html,/示例条目|Illustrative entry|用 AI 做出一个|Build an AI product/);
     assert.doesNotMatch(html,/life-toolbar|data-life-filter|class="status-text"|从这里开始，留下思考与生活的记录|A place to leave a record of thoughts and everyday life/);
     assert.doesNotMatch(html,/Chip Huyen|灵感来自|Inspired by/);
     assert.doesNotMatch(html,/class="page-heading"|class="list-closing"|给未来留一点期待|THINGS TO LOOK FORWARD TO|剩下的空白|The blank lines/);
     assert.match(read(`${prefix}index.html`),new RegExp(`href="/${prefix}list-100/"`));
+  }
+});
+
+test('List100 lists finished entries first and numbers rows by position', () => {
+  const rank = { done: 0, doing: 1, todo: 2 };
+  for (const prefix of ['', 'en/']) {
+    const html = read(`${prefix}list-100/index.html`);
+    const rows = [...html.matchAll(/<li class="life-item" data-status="(done|doing|todo)">\s*<span class="life-number">(\d+)<\/span>[\s\S]*?<h2>([^<]+)</g)]
+      .map(([, status, number, title]) => ({ status, number, title }));
+    assert.equal(rows.length, (html.match(/class="life-item"/g) ?? []).length, 'Every row should carry a status, a number and a title');
+    assert.deepEqual(rows.map(row => row.number), rows.map((_, index) => String(index + 1).padStart(2, '0')), 'Row numbers should run 01, 02, 03… without gaps');
+    const statuses = rows.map(row => row.status);
+    assert.deepEqual(statuses, statuses.toSorted((a, b) => rank[a] - rank[b]), 'Rows should run done, doing, todo');
+    // Row 02 is ID 14: it is finished, so it moves ahead of the unfinished IDs 2–13.
+    assert.deepEqual(rows.slice(0, 3).map(row => row.title), prefix
+      ? ['Build a personal blog of my own', 'Find the love of my life', 'Release an app of my own']
+      : ['拥有自己的个人博客', '找到人生伴侣', '发布一款自己的 App']);
+    const grid = html.match(/<span class="list-progress numbered"[^>]*>((?:<span(?: class="\w+")?>\d*<\/span>){100})<\/span>/);
+    assert.ok(grid, 'The numbered grid should hold exactly 100 cells');
+    const cells = [...grid[1].matchAll(/<span(?: class="(\w+)")?>(\d*)<\/span>/g)].map(([, status = '', number]) => ({ status, number }));
+    assert.deepEqual(cells.slice(0, rows.length), rows.map((row, index) => ({ status: row.status, number: String(index + 1) })), 'Cell N should match row N');
+    assert.ok(cells.slice(rows.length).every(cell => !cell.status && !cell.number), 'Slots without an entry should stay empty');
   }
 });
 

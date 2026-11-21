@@ -32,11 +32,11 @@ export const lifeList: LifeItem[] = [
   },
   {
     id: 6, status: 'todo',
-    title: { zh: '去西班牙旅行', en: 'Travel to Spain' },
+    title: { zh: '去欧洲旅行', en: 'Travel to Europe' },
   },
   {
     id: 7, status: 'todo',
-    title: { zh: '去意大利旅行', en: 'Travel to Italy' },
+    title: { zh: '去北美旅行', en: 'Travel to North America' },
   },
   {
     id: 8, status: 'todo',
@@ -44,14 +44,45 @@ export const lifeList: LifeItem[] = [
   },
   {
     id: 9, status: 'todo',
-    title: { zh: '去美国看看，调研美国为什么拥有如此丰富的创造力', en: 'Visit the United States and explore why it fosters so much creativity' },
+    title: { zh: '居住在其他国家/地区', en: 'Live in another country/region' },
   },
   {
     id: 10, status: 'todo',
     title: { zh: '走完西班牙朝圣之路', en: 'Walk the Camino de Santiago in Spain' },
+  },
+  {
+    id: 11, status: 'todo',
+    title: { zh: '阅读1000本书', en: 'Read 1000 books' },
+  },
+  {
+    id: 12, status: 'todo',
+    title: { zh: '创办公司', en: 'Start a company' },
+  },
+  {
+    id: 13, status: 'todo',
+    title: { zh: '编写一首音乐', en: 'Compose a piece of music' },
+  },
+  {
+    id: 14, status: 'done',
+    title: { zh: '找到人生伴侣', en: 'Find the love of my life' },
+  },
+  {
+    id: 15, status: 'todo',
+    title: { zh: '出版自己写的书', en: 'Publish a book of my own' },
+  },
+  {
+    id: 16, status: 'todo',
+    title: { zh: '跟我爱人求婚并结婚', en: 'Propose to my partner and get married' },
   },
 ];
 if (lifeList.length > 100 || new Set(lifeList.map(item => item.id)).size !== lifeList.length ||
   lifeList.some(item => !Number.isInteger(item.id) || item.id < 1 || item.id > 100)) {
   throw new Error('List100 IDs must be unique integers from 1 to 100.');
 }
+// Display order: finished first, then in progress, then not started, each group in ID order.
+// The page and the cell grid number entries by their position here, so the numbering always
+// runs 1, 2, 3… and changing a status moves an entry without touching any ID.
+const statusRank: Record<LifeStatus, number> = { done: 0, doing: 1, todo: 2 };
+export const orderedLifeList: LifeItem[] = [...lifeList].sort(
+  (a, b) => statusRank[a.status] - statusRank[b.status] || a.id - b.id,
+);

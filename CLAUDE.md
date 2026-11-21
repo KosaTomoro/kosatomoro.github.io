@@ -42,7 +42,7 @@ All tokens live in `:root` in `src/styles/global.css`. Use them instead of raw v
 - Home: `aside.about-profile`, the exact `span.experience-job` markup, `p.intro-line`, avatar `src` before `alt`, and the inline theme script in `Base.astro` (the test matches its `'dark'` default).
 - Article: `class="article-content has-toc"`, `body.article-page`, `.article-toc` before the element whose class is exactly `article-reading`, one "back to list" link, and equal `h2`/`h3` counts between the Chinese and English pages (do not add headings to article chrome).
 - Lists: `class="post-row"` is counted; blog, archive and List100 must not gain `class="page-heading"`.
-- List100: `li.life-item[data-status]` and `span.status-mark` with its attribute order and ✓ / – / × characters. CSS hides those characters and draws a checkbox instead. The tests count `data-status`, so the cell grid marks its cells with classes.
+- List100: `li.life-item[data-status]` with `span.life-number` as its first child, and `span.status-mark` with its attribute order and ✓ / – / × characters. CSS hides those characters and draws a checkbox instead. The tests count `data-status`, so the cell grid marks its cells with classes; they also read the numbered grid as exactly 100 child spans that carry only a status class and a number. The entry counts, a few titles and the first three rows are hard-coded, so update them whenever the list or a status changes.
 - Script hooks: `.theme-toggle`, `a.language-switch`, `.prose`, `.article-progress` and the `progress` inside it, `.share-copy`, `.article-toc`, `#search-form`, `#search-input`, `#search-status`, `#search-results`, `[data-*]` attributes and `.ideas-edit` on the Ideas pages.
 
 ## Visual QA

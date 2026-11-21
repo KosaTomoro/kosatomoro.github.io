@@ -2,10 +2,10 @@
 import Base from '../layouts/Base.astro';
 import ListProgress from './ListProgress.astro';
 import { copy, getLocale, localPath } from '../i18n';
-import { lifeList, type LifeStatus } from '../data/list100';
+import { orderedLifeList, type LifeStatus } from '../data/list100';
 const locale = getLocale(Astro.url.pathname);
 const t = copy(locale);
-const items = [...lifeList].sort((a,b) => a.id-b.id);
+const items = orderedLifeList;
 const completed = items.filter(item => item.status === 'done').length;
 const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.done};
 ---
@@ -16,8 +16,8 @@ const statuses: Record<LifeStatus,string> = {todo:t.todo,doing:t.doing,done:t.do
       <p class="progress-note">{t.future}</p>
     </div>
     <ListProgress numbered label={locale === 'zh' ? `100 个位置中，${completed} 项已完成` : `${completed} completed out of 100 possible entries`} />
-    <ol class="life-list">{items.map(item => <li class="life-item" data-status={item.status}>
-      <span class="life-number">{String(item.id).padStart(2,'0')}</span><span class="status-mark" aria-hidden="true">{item.status==='done'?'✓':item.status==='doing'?'–':'×'}</span>
+    <ol class="life-list">{items.map((item, index) => <li class="life-item" data-status={item.status}>
+      <span class="life-number">{String(index + 1).padStart(2,'0')}</span><span class="status-mark" aria-hidden="true">{item.status==='done'?'✓':item.status==='doing'?'–':'×'}</span>
       <div><h2>{item.title[locale]}<span class="sr-only"> — {statuses[item.status]}</span></h2>
         {item.description && <p>{item.description[locale]}</p>}
         {item.completed && <time datetime={item.completed}>{item.completed}</time>}
